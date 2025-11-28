@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package identity.v1;
+
+option go_package = "github.com/chefnext/chefnext/apps/api/internal/gen/identity/v1;identityv1";
+
+// AuthService handles user authentication operations
+service AuthService {
+  // Register creates a new user account
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // Login authenticates a user and returns tokens
+  rpc Login(LoginRequest) returns (LoginResponse);
+
+  // RefreshToken refreshes an access token using a refresh token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+
+  // Logout invalidates the refresh token
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+// UserRole defines the role of a user in the system
+enum UserRole {
+  USER_ROLE_UNSPECIFIED = 0;
+  USER_ROLE_CHEF = 1;
+  USER_ROLE_RESTAURANT = 2;
+}
+
+// RegisterRequest contains user registration information
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  UserRole role = 3;
+}
+
+// RegisterResponse contains the newly created user and auth tokens
+message RegisterResponse {
+  string user_id = 1;
+  string email = 2;
+  UserRole role = 3;
+  string access_token = 4;
+  string refresh_token = 5;
+}
+
+// LoginRequest contains user login credentials
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// LoginResponse contains the authenticated user and auth tokens
+message LoginResponse {
+  string user_id = 1;
+  string email = 2;
+  UserRole role = 3;
+  string access_token = 4;
+  string refresh_token = 5;
+}
+
+// RefreshTokenRequest contains the refresh token
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+// RefreshTokenResponse contains a new access token
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+// LogoutRequest contains the refresh token to invalidate
+message LogoutRequest {
+  string refresh_token = 1;
+}
+
+// LogoutResponse confirms logout
+message LogoutResponse {
+  bool success = 1;
+}

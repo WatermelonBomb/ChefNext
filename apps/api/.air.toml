@@ -1,0 +1,13 @@
+# Air configuration for ChefNext API
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/chefnext ./cmd/api"
+  bin = "./tmp/chefnext"
+  delay = 1000
+  exclude_dir = ["tmp", "vendor", "node_modules"]
+  include_ext = ["go", "mod", "sum"]
+  exclude_regex = ["_test\\.go"]
+
+[log]
+  time = true
