@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package restaurant.v1;
+
+option go_package = "github.com/chefnext/chefnext/apps/api/internal/gen/restaurant/v1;restaurantv1";
+
+service RestaurantProfileService {
+  rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse);
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+  rpc GetMyProfile(GetMyProfileRequest) returns (GetMyProfileResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  rpc SearchProfiles(SearchProfilesRequest) returns (SearchProfilesResponse);
+}
+
+message RestaurantProfile {
+  string id = 1;
+  string user_id = 2;
+  string display_name = 3;
+  string tagline = 4;
+  string location = 5;
+  int32 seats = 6;
+  repeated string cuisine_types = 7;
+  string mentorship_style = 8;
+  string description = 9;
+  repeated string culture_keywords = 10;
+  repeated string benefits = 11;
+  repeated string support_programs = 12;
+  repeated LearningHighlight learning_highlights = 13;
+  string created_at = 14;
+  string updated_at = 15;
+}
+
+message LearningHighlight {
+  string id = 1;
+  string title = 2;
+  string duration = 3;
+  string detail = 4;
+}
+
+message CreateProfileRequest {
+  string display_name = 1;
+  string tagline = 2;
+  string location = 3;
+  int32 seats = 4;
+  repeated string cuisine_types = 5;
+  string mentorship_style = 6;
+  string description = 7;
+  repeated string culture_keywords = 8;
+  repeated string benefits = 9;
+  repeated string support_programs = 10;
+  repeated LearningHighlight learning_highlights = 11;
+}
+
+message CreateProfileResponse {
+  RestaurantProfile profile = 1;
+}
+
+message GetProfileRequest {
+  string profile_id = 1;
+}
+
+message GetProfileResponse {
+  RestaurantProfile profile = 1;
+}
+
+message GetMyProfileRequest {}
+
+message GetMyProfileResponse {
+  RestaurantProfile profile = 1;
+}
+
+message UpdateProfileRequest {
+  string profile_id = 1;
+  string display_name = 2;
+  string tagline = 3;
+  string location = 4;
+  int32 seats = 5;
+  repeated string cuisine_types = 6;
+  string mentorship_style = 7;
+  string description = 8;
+  repeated string culture_keywords = 9;
+  repeated string benefits = 10;
+  repeated string support_programs = 11;
+  repeated LearningHighlight learning_highlights = 12;
+}
+
+message UpdateProfileResponse {
+  RestaurantProfile profile = 1;
+}
+
+message SearchProfilesRequest {
+  repeated string cuisine_types = 1;
+  string name = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message SearchProfilesResponse {
+  repeated RestaurantProfile profiles = 1;
+}

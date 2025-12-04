@@ -1,0 +1,10 @@
+{
+  "name": "@chefnext/api",
+  "private": true,
+  "scripts": {
+    "dev": "go run ./cmd/api",
+    "build": "go build ./cmd/api",
+    "lint": "go vet ./...",
+    "test": "go test ./..."
+  }
+}

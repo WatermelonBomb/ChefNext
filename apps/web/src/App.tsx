@@ -12,6 +12,12 @@ import { ChefProfilePage } from './components/ChefProfilePage';
 import { ChatPage } from './components/ChatPage';
 import { InterviewSchedulePage } from './components/InterviewSchedulePage';
 import { ReviewPage } from './components/ReviewPage';
+import { AuthPage } from './components/AuthPage';
+import { ChefProfileEditor } from './components/profile/ChefProfileEditor';
+import { RestaurantProfileEditor } from './components/profile/RestaurantProfileEditor';
+import { RestaurantProfilePage } from './components/RestaurantProfilePage';
+import { ProfileProvider } from './context/ProfileContext';
+import { useAuth } from './hooks/useAuth';
 
 type Page =
   | 'landing'
@@ -22,13 +28,18 @@ type Page =
   | 'jobs'
   | 'job-detail'
   | 'profile'
+  | 'chef-profile-builder'
+  | 'restaurant-profile-builder'
+  | 'restaurant-profile'
   | 'chat'
   | 'interview-schedule'
   | 'review'
-  | 'about';
+  | 'about'
+  | 'auth';
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
+  const { isAuthenticated } = useAuth();
 
   const navigateTo = (page: Page) => {
     setCurrentPage(page);
@@ -37,13 +48,32 @@ function App() {
   const renderPage = () => {
     switch (currentPage) {
       case 'chef-register':
-        return <ChefRegisterFlow onComplete={() => navigateTo('jobs')} />;
+        return <ChefRegisterFlow onComplete={() => navigateTo('chef-profile-builder')} />;
 
       case 'restaurant-register':
-        return <RestaurantRegisterFlow onComplete={() => navigateTo('restaurant-dashboard')} />;
+        return <RestaurantRegisterFlow onComplete={() => navigateTo('restaurant-profile-builder')} />;
+
+      case 'chef-profile-builder':
+        return (
+          <ChefProfileEditor
+            onBack={() => navigateTo('jobs')}
+            onSaved={() => navigateTo('profile')}
+          />
+        );
+
+      case 'restaurant-profile-builder':
+        return (
+          <RestaurantProfileEditor
+            onBack={() => navigateTo('restaurant-dashboard')}
+            onSaved={() => navigateTo('restaurant-profile')}
+          />
+        );
 
       case 'restaurant-dashboard':
         return <RestaurantDashboard onNavigate={navigateTo} />;
+
+      case 'restaurant-profile':
+        return <RestaurantProfilePage onBack={() => navigateTo('restaurant-dashboard')} />;
 
       case 'job-post':
         return <JobPostPage onBack={() => navigateTo('restaurant-dashboard')} />;
@@ -56,6 +86,14 @@ function App() {
 
       case 'profile':
         return <ChefProfilePage onBack={() => navigateTo('jobs')} />;
+
+      case 'auth':
+        return (
+          <AuthPage
+            onBack={() => navigateTo('landing')}
+            onSuccess={() => navigateTo('jobs')}
+          />
+        );
 
       case 'chat':
         return (
@@ -146,7 +184,7 @@ function App() {
       <Footer />
 
       {/* Quick Access FAB - Profile */}
-      {currentPage !== 'landing' && currentPage !== 'chef-register' && (
+      {isAuthenticated && currentPage !== 'landing' && currentPage !== 'chef-register' && (
         <button
           onClick={() => navigateTo('profile')}
           className="fixed bottom-6 right-6 w-14 h-14 bg-[#CDAE58] rounded-full shadow-[0_4px_20px_rgba(205,174,88,0.4)] flex items-center justify-center hover:shadow-[0_8px_30px_rgba(205,174,88,0.5)] transition-all z-50"
@@ -155,6 +193,13 @@ function App() {
         </button>
       )}
     </div>
+  );
+}
+function App() {
+  return (
+    <ProfileProvider>
+      <AppContent />
+    </ProfileProvider>
   );
 }
 

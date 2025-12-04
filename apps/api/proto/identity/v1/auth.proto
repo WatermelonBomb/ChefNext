@@ -17,6 +17,9 @@ service AuthService {
 
   // Logout invalidates the refresh token
   rpc Logout(LogoutRequest) returns (LogoutResponse);
+
+  // GetMe returns the current authenticated user's information
+  rpc GetMe(GetMeRequest) returns (GetMeResponse);
 }
 
 // UserRole defines the role of a user in the system
@@ -76,4 +79,14 @@ message LogoutRequest {
 // LogoutResponse confirms logout
 message LogoutResponse {
   bool success = 1;
+}
+
+// GetMeRequest is empty as authentication is handled via JWT
+message GetMeRequest {}
+
+// GetMeResponse contains the current user's information
+message GetMeResponse {
+  string user_id = 1;
+  string email = 2;
+  UserRole role = 3;
 }

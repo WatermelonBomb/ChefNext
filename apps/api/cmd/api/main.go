@@ -13,10 +13,26 @@ import (
 	"syscall"
 	"time"
 
+	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
+	"github.com/chefnext/chefnext/apps/api/internal/gen/chef/v1/chefv1connect"
+	"github.com/chefnext/chefnext/apps/api/internal/gen/identity/v1/identityv1connect"
+	"github.com/chefnext/chefnext/apps/api/internal/gen/restaurant/v1/restaurantv1connect"
+	chefHandler "github.com/chefnext/chefnext/apps/api/internal/handler/chef"
+	"github.com/chefnext/chefnext/apps/api/internal/handler/identity"
+	restaurantHandler "github.com/chefnext/chefnext/apps/api/internal/handler/restaurant"
+	"github.com/chefnext/chefnext/apps/api/internal/middleware"
+	"github.com/chefnext/chefnext/apps/api/internal/pkg/auth"
 	"github.com/chefnext/chefnext/apps/api/internal/pkg/config"
 	"github.com/chefnext/chefnext/apps/api/internal/pkg/logger"
+	"github.com/chefnext/chefnext/apps/api/internal/repository/db"
+	chefProfileUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/chefprofile"
+	identityUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/identity"
+	restaurantProfileUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/restaurantprofile"
 )
 
 func main() {
@@ -37,18 +53,73 @@ func run() error {
 
 	log := logger.New(cfg.LogLevel)
 
-	db, err := pgxpool.New(ctx, cfg.DatabaseURL)
+	// Initialize database
+	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("connect to database: %w", err)
 	}
-	defer db.Close()
+	defer pool.Close()
+
+	queries := db.New(pool)
+
+	// Initialize Redis
+	redisClient := redis.NewClient(&redis.Options{
+		Addr: cfg.RedisAddr,
+	})
+	defer redisClient.Close()
+
+	if err := redisClient.Ping(ctx).Err(); err != nil {
+		return fmt.Errorf("connect to redis: %w", err)
+	}
+
+	// Initialize JWT manager and token store
+	jwtManager := auth.NewJWTManager(cfg.JWTSecret, 15*time.Minute, 30*24*time.Hour)
+	tokenStore := auth.NewTokenStore(redisClient, 30*24*time.Hour)
+
+	// Initialize use cases
+	registerUC := identityUseCase.NewRegisterUseCase(queries, jwtManager, tokenStore)
+	loginUC := identityUseCase.NewLoginUseCase(queries, jwtManager, tokenStore)
+	refreshTokenUC := identityUseCase.NewRefreshTokenUseCase(queries, jwtManager, tokenStore)
+	logoutUC := identityUseCase.NewLogoutUseCase(jwtManager, tokenStore)
+	chefProfileUC := chefProfileUseCase.NewService(queries)
+	restaurantProfileUC := restaurantProfileUseCase.NewService(queries)
+
+	// Initialize handlers
+	authHandler := identity.NewAuthHandler(registerUC, loginUC, refreshTokenUC, logoutUC)
+	chefProfileHandler := chefHandler.NewProfileHandler(chefProfileUC)
+	restaurantProfileHandler := restaurantHandler.NewProfileHandler(restaurantProfileUC)
+
+	// Initialize interceptors
+	authInterceptor := middleware.NewAuthInterceptor(jwtManager)
+	rateLimitInterceptor := middleware.NewRateLimitInterceptor(100, 200) // 100 req/sec, burst 200
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", healthHandler(db))
+	mux.HandleFunc("/health", healthHandler(pool))
 
+	// Register Connect-RPC routes with interceptors
+	// Apply rate limiting to all endpoints, auth to protected endpoints
+	path, handler := identityv1connect.NewAuthServiceHandler(
+		authHandler,
+		connect.WithInterceptors(rateLimitInterceptor, authInterceptor),
+	)
+	mux.Handle(path, handler)
+
+	path, handler = chefv1connect.NewChefProfileServiceHandler(
+		chefProfileHandler,
+		connect.WithInterceptors(rateLimitInterceptor, authInterceptor),
+	)
+	mux.Handle(path, handler)
+
+	path, handler = restaurantv1connect.NewRestaurantProfileServiceHandler(
+		restaurantProfileHandler,
+		connect.WithInterceptors(rateLimitInterceptor, authInterceptor),
+	)
+	mux.Handle(path, handler)
+
+	// Use h2c to support HTTP/2 without TLS (required for Connect-RPC)
 	srv := &http.Server{
 		Addr:    net.JoinHostPort(cfg.HTTPHost, cfg.HTTPPort),
-		Handler: loggingMiddleware(log, mux),
+		Handler: loggingMiddleware(log, h2c.NewHandler(mux, &http2.Server{})),
 	}
 
 	go func() {

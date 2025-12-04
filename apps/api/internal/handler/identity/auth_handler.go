@@ -6,6 +6,7 @@ import (
 	"connectrpc.com/connect"
 	identityv1 "github.com/chefnext/chefnext/apps/api/internal/gen/identity/v1"
 	"github.com/chefnext/chefnext/apps/api/internal/gen/identity/v1/identityv1connect"
+	"github.com/chefnext/chefnext/apps/api/internal/middleware"
 	"github.com/chefnext/chefnext/apps/api/internal/usecase/identity"
 )
 
@@ -140,5 +141,41 @@ func (h *AuthHandler) Logout(ctx context.Context, req *connect.Request[identityv
 
 	return connect.NewResponse(&identityv1.LogoutResponse{
 		Success: output.Success,
+	}), nil
+}
+
+// GetMe returns the current authenticated user's information
+func (h *AuthHandler) GetMe(ctx context.Context, req *connect.Request[identityv1.GetMeRequest]) (*connect.Response[identityv1.GetMeResponse], error) {
+	// Get user information from context (populated by auth interceptor)
+	userID, ok := middleware.GetUserID(ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, nil)
+	}
+
+	email, ok := middleware.GetUserEmail(ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, nil)
+	}
+
+	role, ok := middleware.GetUserRole(ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, nil)
+	}
+
+	// Convert role string to enum
+	var roleEnum identityv1.UserRole
+	switch role {
+	case "CHEF":
+		roleEnum = identityv1.UserRole_USER_ROLE_CHEF
+	case "RESTAURANT":
+		roleEnum = identityv1.UserRole_USER_ROLE_RESTAURANT
+	default:
+		roleEnum = identityv1.UserRole_USER_ROLE_UNSPECIFIED
+	}
+
+	return connect.NewResponse(&identityv1.GetMeResponse{
+		UserId: userID.String(),
+		Email:  email,
+		Role:   roleEnum,
 	}), nil
 }

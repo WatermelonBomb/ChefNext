@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Card } from '../common/Card';
 import { Upload, X, Check, Image as ImageIcon, AlertCircle } from 'lucide-react';
 
-interface UploadedImage {
+export interface UploadedImage {
   id: string;
-  file: File;
+  file?: File;
   preview: string;
   status: 'uploading' | 'success' | 'error';
   progress: number;
+  dataUrl?: string;
 }
 
 interface ImageUploaderProps {
@@ -95,6 +96,14 @@ export function ImageUploader({
       };
 
       newImages.push(newImage);
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImages((prev) =>
+          prev.map((img) => (img.id === newImage.id ? { ...img, dataUrl: reader.result as string } : img))
+        );
+      };
+      reader.readAsDataURL(file);
 
       // Start upload simulation
       simulateUpload(newImage);
@@ -252,10 +261,10 @@ export function ImageUploader({
 
                   <div className="mt-2 text-center">
                     <div className="text-xs text-[#1C1C1C]/60 truncate">
-                      {image.file.name}
+                      {image.file?.name ?? 'アップロード済み'}
                     </div>
                     <div className="text-xs text-[#1C1C1C]/40">
-                      {(image.file.size / 1024 / 1024).toFixed(1)} MB
+                      {image.file ? `${(image.file.size / 1024 / 1024).toFixed(1)} MB` : '—'}
                     </div>
                   </div>
                 </Card>

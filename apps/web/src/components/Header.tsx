@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Menu, X, User, Briefcase } from 'lucide-react';
 import { Button } from './Button';
+import { useAuth } from '../hooks/useAuth';
 
 interface HeaderProps {
   currentPage: string;
@@ -10,6 +11,16 @@ interface HeaderProps {
 
 export function Header({ currentPage, onNavigate }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const { isAuthenticated, logout, loading, user } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      onNavigate('landing');
+    } catch (error) {
+      console.error('Failed to logout', error);
+    }
+  };
   
   return (
     <motion.header
@@ -42,22 +53,35 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             >
               ChefNextとは
             </button>
-            <Button 
-              variant="secondary" 
-              size="sm"
-              onClick={() => onNavigate('chef-register')}
+            <button 
+              onClick={() => onNavigate('chef-profile-builder')}
+              className="text-[#1C1C1C] hover:text-[#CDAE58] transition-colors"
             >
-              <User className="w-4 h-4" />
-              シェフとして始める
-            </Button>
-            <Button 
-              variant="primary" 
-              size="sm"
-              onClick={() => onNavigate('restaurant-register')}
-            >
-              <Briefcase className="w-4 h-4" />
-              店舗として参加
-            </Button>
+              プロフィール作成
+            </button>
+            {!isAuthenticated ? (
+              <Button 
+                variant="primary" 
+                size="sm"
+                onClick={() => onNavigate('auth')}
+              >
+                <User className="w-4 h-4" />
+                ログイン / 登録
+              </Button>
+            ) : (
+              <>
+                <span className="text-xs text-[#1C1C1C]/60">{user?.email}</span>
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={handleLogout}
+                  disabled={loading}
+                >
+                  <Briefcase className="w-4 h-4" />
+                  ログアウト
+                </Button>
+              </>
+            )}
           </nav>
           
           {/* Mobile Menu Button */}
@@ -88,24 +112,34 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             >
               ChefNextとは
             </button>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              className="w-full"
-              onClick={() => { onNavigate('chef-register'); setMobileMenuOpen(false); }}
+            <button 
+              onClick={() => { onNavigate('chef-profile-builder'); setMobileMenuOpen(false); }}
+              className="block w-full text-left px-4 py-2 hover:bg-[#CDAE58]/10 rounded-lg"
             >
-              <User className="w-4 h-4" />
-              シェフとして始める
-            </Button>
-            <Button 
-              variant="primary" 
-              size="sm" 
-              className="w-full"
-              onClick={() => { onNavigate('restaurant-register'); setMobileMenuOpen(false); }}
-            >
-              <Briefcase className="w-4 h-4" />
-              店舗として参加
-            </Button>
+              プロフィール作成
+            </button>
+            {!isAuthenticated ? (
+              <Button 
+                variant="primary" 
+                size="sm" 
+                className="w-full"
+                onClick={() => { onNavigate('auth'); setMobileMenuOpen(false); }}
+              >
+                <User className="w-4 h-4" />
+                ログイン / 登録
+              </Button>
+            ) : (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="w-full"
+                onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                disabled={loading}
+              >
+                <Briefcase className="w-4 h-4" />
+                ログアウト
+              </Button>
+            )}
           </motion.div>
         )}
       </div>

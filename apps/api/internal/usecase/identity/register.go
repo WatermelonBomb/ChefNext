@@ -2,12 +2,12 @@ package identity
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 
 	"github.com/chefnext/chefnext/apps/api/internal/pkg/auth"
 	"github.com/chefnext/chefnext/apps/api/internal/repository/db"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 var (
@@ -59,7 +59,7 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, input RegisterInput) (*R
 	if err == nil {
 		return nil, ErrEmailAlreadyExists
 	}
-	if err != sql.ErrNoRows {
+	if err != pgx.ErrNoRows {
 		return nil, err
 	}
 
@@ -80,24 +80,30 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, input RegisterInput) (*R
 		return nil, err
 	}
 
-	// Generate tokens
-	accessToken, err := uc.jwtManager.GenerateAccessToken(user.ID, user.Email, user.Role)
+	// Convert pgtype.UUID to uuid.UUID
+	userID, err := uuid.FromBytes(user.ID.Bytes[:])
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := uc.jwtManager.GenerateRefreshToken(user.ID, user.Email, user.Role)
+	// Generate tokens
+	accessToken, err := uc.jwtManager.GenerateAccessToken(userID, user.Email, user.Role)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := uc.jwtManager.GenerateRefreshToken(userID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
 
 	// Store refresh token in Redis
-	if err := uc.tokenStore.StoreRefreshToken(ctx, user.ID, refreshToken); err != nil {
+	if err := uc.tokenStore.StoreRefreshToken(ctx, userID, refreshToken); err != nil {
 		return nil, err
 	}
 
 	return &RegisterOutput{
-		UserID:       user.ID,
+		UserID:       userID,
 		Email:        user.Email,
 		Role:         user.Role,
 		AccessToken:  accessToken,

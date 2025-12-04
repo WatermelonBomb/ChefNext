@@ -5,6 +5,8 @@ import (
 
 	"github.com/chefnext/chefnext/apps/api/internal/pkg/auth"
 	"github.com/chefnext/chefnext/apps/api/internal/repository/db"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // RefreshTokenUseCase handles token refresh
@@ -51,25 +53,37 @@ func (uc *RefreshTokenUseCase) Execute(ctx context.Context, input RefreshTokenIn
 		return nil, auth.ErrInvalidToken
 	}
 
+	// Convert uuid.UUID to pgtype.UUID for database query
+	var pgUserID pgtype.UUID
+	if err := pgUserID.Scan(claims.UserID[:]); err != nil {
+		return nil, err
+	}
+
 	// Get user from database to ensure they still exist
-	user, err := uc.queries.GetUserByID(ctx, claims.UserID)
+	user, err := uc.queries.GetUserByID(ctx, pgUserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert pgtype.UUID back to uuid.UUID
+	userID, err := uuid.FromBytes(user.ID.Bytes[:])
 	if err != nil {
 		return nil, err
 	}
 
 	// Generate new tokens
-	newAccessToken, err := uc.jwtManager.GenerateAccessToken(user.ID, user.Email, user.Role)
+	newAccessToken, err := uc.jwtManager.GenerateAccessToken(userID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
 
-	newRefreshToken, err := uc.jwtManager.GenerateRefreshToken(user.ID, user.Email, user.Role)
+	newRefreshToken, err := uc.jwtManager.GenerateRefreshToken(userID, user.Email, user.Role)
 	if err != nil {
 		return nil, err
 	}
 
 	// Store new refresh token
-	if err := uc.tokenStore.StoreRefreshToken(ctx, user.ID, newRefreshToken); err != nil {
+	if err := uc.tokenStore.StoreRefreshToken(ctx, userID, newRefreshToken); err != nil {
 		return nil, err
 	}
 

@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -34,7 +34,7 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser,
+	row := q.db.QueryRow(ctx, createUser,
 		arg.Email,
 		arg.PasswordHash,
 		arg.Role,
@@ -62,7 +62,7 @@ LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -84,8 +84,8 @@ WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByID, id)
+func (q *Queries) GetUserByID(ctx context.Context, id pgtype.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -108,11 +108,11 @@ WHERE id = $1
 `
 
 type UpdateUserKYCStatusParams struct {
-	ID        uuid.UUID
+	ID        pgtype.UUID
 	KycStatus string
 }
 
 func (q *Queries) UpdateUserKYCStatus(ctx context.Context, arg UpdateUserKYCStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserKYCStatus, arg.ID, arg.KycStatus)
+	_, err := q.db.Exec(ctx, updateUserKYCStatus, arg.ID, arg.KycStatus)
 	return err
 }

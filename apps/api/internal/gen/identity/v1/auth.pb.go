@@ -527,6 +527,104 @@ func (x *LogoutResponse) GetSuccess() bool {
 	return false
 }
 
+// GetMeRequest is empty as authentication is handled via JWT
+type GetMeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeRequest) Reset() {
+	*x = GetMeRequest{}
+	mi := &file_identity_v1_auth_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeRequest) ProtoMessage() {}
+
+func (x *GetMeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_identity_v1_auth_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeRequest.ProtoReflect.Descriptor instead.
+func (*GetMeRequest) Descriptor() ([]byte, []int) {
+	return file_identity_v1_auth_proto_rawDescGZIP(), []int{8}
+}
+
+// GetMeResponse contains the current user's information
+type GetMeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Role          UserRole               `protobuf:"varint,3,opt,name=role,proto3,enum=identity.v1.UserRole" json:"role,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeResponse) Reset() {
+	*x = GetMeResponse{}
+	mi := &file_identity_v1_auth_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeResponse) ProtoMessage() {}
+
+func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_identity_v1_auth_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeResponse.ProtoReflect.Descriptor instead.
+func (*GetMeResponse) Descriptor() ([]byte, []int) {
+	return file_identity_v1_auth_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetMeResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetMeResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *GetMeResponse) GetRole() UserRole {
+	if x != nil {
+		return x.Role
+	}
+	return UserRole_USER_ROLE_UNSPECIFIED
+}
+
 var File_identity_v1_auth_proto protoreflect.FileDescriptor
 
 const file_identity_v1_auth_proto_rawDesc = "" +
@@ -559,16 +657,22 @@ const file_identity_v1_auth_proto_rawDesc = "" +
 	"\rLogoutRequest\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"*\n" +
 	"\x0eLogoutResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess*S\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x0e\n" +
+	"\fGetMeRequest\"i\n" +
+	"\rGetMeResponse\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12)\n" +
+	"\x04role\x18\x03 \x01(\x0e2\x15.identity.v1.UserRoleR\x04role*S\n" +
 	"\bUserRole\x12\x19\n" +
 	"\x15USER_ROLE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eUSER_ROLE_CHEF\x10\x01\x12\x18\n" +
-	"\x14USER_ROLE_RESTAURANT\x10\x022\xae\x02\n" +
+	"\x14USER_ROLE_RESTAURANT\x10\x022\xee\x02\n" +
 	"\vAuthService\x12G\n" +
 	"\bRegister\x12\x1c.identity.v1.RegisterRequest\x1a\x1d.identity.v1.RegisterResponse\x12>\n" +
 	"\x05Login\x12\x19.identity.v1.LoginRequest\x1a\x1a.identity.v1.LoginResponse\x12S\n" +
 	"\fRefreshToken\x12 .identity.v1.RefreshTokenRequest\x1a!.identity.v1.RefreshTokenResponse\x12A\n" +
-	"\x06Logout\x12\x1a.identity.v1.LogoutRequest\x1a\x1b.identity.v1.LogoutResponseB\xb4\x01\n" +
+	"\x06Logout\x12\x1a.identity.v1.LogoutRequest\x1a\x1b.identity.v1.LogoutResponse\x12>\n" +
+	"\x05GetMe\x12\x19.identity.v1.GetMeRequest\x1a\x1a.identity.v1.GetMeResponseB\xb4\x01\n" +
 	"\x0fcom.identity.v1B\tAuthProtoP\x01ZIgithub.com/chefnext/chefnext/apps/api/internal/gen/identity/v1;identityv1\xa2\x02\x03IXX\xaa\x02\vIdentity.V1\xca\x02\vIdentity\\V1\xe2\x02\x17Identity\\V1\\GPBMetadata\xea\x02\fIdentity::V1b\x06proto3"
 
 var (
@@ -584,7 +688,7 @@ func file_identity_v1_auth_proto_rawDescGZIP() []byte {
 }
 
 var file_identity_v1_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_identity_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_identity_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_identity_v1_auth_proto_goTypes = []any{
 	(UserRole)(0),                // 0: identity.v1.UserRole
 	(*RegisterRequest)(nil),      // 1: identity.v1.RegisterRequest
@@ -595,24 +699,29 @@ var file_identity_v1_auth_proto_goTypes = []any{
 	(*RefreshTokenResponse)(nil), // 6: identity.v1.RefreshTokenResponse
 	(*LogoutRequest)(nil),        // 7: identity.v1.LogoutRequest
 	(*LogoutResponse)(nil),       // 8: identity.v1.LogoutResponse
+	(*GetMeRequest)(nil),         // 9: identity.v1.GetMeRequest
+	(*GetMeResponse)(nil),        // 10: identity.v1.GetMeResponse
 }
 var file_identity_v1_auth_proto_depIdxs = []int32{
-	0, // 0: identity.v1.RegisterRequest.role:type_name -> identity.v1.UserRole
-	0, // 1: identity.v1.RegisterResponse.role:type_name -> identity.v1.UserRole
-	0, // 2: identity.v1.LoginResponse.role:type_name -> identity.v1.UserRole
-	1, // 3: identity.v1.AuthService.Register:input_type -> identity.v1.RegisterRequest
-	3, // 4: identity.v1.AuthService.Login:input_type -> identity.v1.LoginRequest
-	5, // 5: identity.v1.AuthService.RefreshToken:input_type -> identity.v1.RefreshTokenRequest
-	7, // 6: identity.v1.AuthService.Logout:input_type -> identity.v1.LogoutRequest
-	2, // 7: identity.v1.AuthService.Register:output_type -> identity.v1.RegisterResponse
-	4, // 8: identity.v1.AuthService.Login:output_type -> identity.v1.LoginResponse
-	6, // 9: identity.v1.AuthService.RefreshToken:output_type -> identity.v1.RefreshTokenResponse
-	8, // 10: identity.v1.AuthService.Logout:output_type -> identity.v1.LogoutResponse
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0,  // 0: identity.v1.RegisterRequest.role:type_name -> identity.v1.UserRole
+	0,  // 1: identity.v1.RegisterResponse.role:type_name -> identity.v1.UserRole
+	0,  // 2: identity.v1.LoginResponse.role:type_name -> identity.v1.UserRole
+	0,  // 3: identity.v1.GetMeResponse.role:type_name -> identity.v1.UserRole
+	1,  // 4: identity.v1.AuthService.Register:input_type -> identity.v1.RegisterRequest
+	3,  // 5: identity.v1.AuthService.Login:input_type -> identity.v1.LoginRequest
+	5,  // 6: identity.v1.AuthService.RefreshToken:input_type -> identity.v1.RefreshTokenRequest
+	7,  // 7: identity.v1.AuthService.Logout:input_type -> identity.v1.LogoutRequest
+	9,  // 8: identity.v1.AuthService.GetMe:input_type -> identity.v1.GetMeRequest
+	2,  // 9: identity.v1.AuthService.Register:output_type -> identity.v1.RegisterResponse
+	4,  // 10: identity.v1.AuthService.Login:output_type -> identity.v1.LoginResponse
+	6,  // 11: identity.v1.AuthService.RefreshToken:output_type -> identity.v1.RefreshTokenResponse
+	8,  // 12: identity.v1.AuthService.Logout:output_type -> identity.v1.LogoutResponse
+	10, // 13: identity.v1.AuthService.GetMe:output_type -> identity.v1.GetMeResponse
+	9,  // [9:14] is the sub-list for method output_type
+	4,  // [4:9] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_identity_v1_auth_proto_init() }
@@ -626,7 +735,7 @@ func file_identity_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_identity_v1_auth_proto_rawDesc), len(file_identity_v1_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

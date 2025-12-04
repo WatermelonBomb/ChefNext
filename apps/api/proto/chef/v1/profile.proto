@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package chef.v1;
+
+option go_package = "github.com/chefnext/chefnext/apps/api/internal/gen/chef/v1;chefv1";
+
+service ChefProfileService {
+  rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse);
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+  rpc GetMyProfile(GetMyProfileRequest) returns (GetMyProfileResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
+  rpc SearchProfiles(SearchProfilesRequest) returns (SearchProfilesResponse);
+}
+
+message ChefProfile {
+  string id = 1;
+  string user_id = 2;
+  string headline = 3;
+  string summary = 4;
+  string location = 5;
+  int32 years_experience = 6;
+  string availability = 7;
+  repeated string specialties = 8;
+  repeated string work_areas = 9;
+  repeated string languages = 10;
+  string bio = 11;
+  repeated string learning_focus = 12;
+  string skill_tree_json = 13;
+  repeated PortfolioItem portfolio_items = 14;
+  string created_at = 15;
+  string updated_at = 16;
+  string full_name = 17;
+}
+
+message PortfolioItem {
+  string id = 1;
+  string url = 2;
+  string caption = 3;
+}
+
+message CreateProfileRequest {
+  string headline = 1;
+  string summary = 2;
+  string location = 3;
+  int32 years_experience = 4;
+  string availability = 5;
+  repeated string specialties = 6;
+  repeated string work_areas = 7;
+  repeated string languages = 8;
+  string bio = 9;
+  repeated string learning_focus = 10;
+  string skill_tree_json = 11;
+  repeated PortfolioItem portfolio_items = 12;
+  string full_name = 13;
+}
+
+message CreateProfileResponse {
+  ChefProfile profile = 1;
+}
+
+message GetProfileRequest {
+  string profile_id = 1;
+}
+
+message GetProfileResponse {
+  ChefProfile profile = 1;
+}
+
+message GetMyProfileRequest {}
+
+message GetMyProfileResponse {
+  ChefProfile profile = 1;
+}
+
+message UpdateProfileRequest {
+  string profile_id = 1;
+  string headline = 2;
+  string summary = 3;
+  string location = 4;
+  int32 years_experience = 5;
+  string availability = 6;
+  repeated string specialties = 7;
+  repeated string work_areas = 8;
+  repeated string languages = 9;
+  string bio = 10;
+  repeated string learning_focus = 11;
+  string skill_tree_json = 12;
+  repeated PortfolioItem portfolio_items = 13;
+  string full_name = 14;
+}
+
+message UpdateProfileResponse {
+  ChefProfile profile = 1;
+}
+
+message SearchProfilesRequest {
+  repeated string specialties = 1;
+  repeated string work_areas = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message SearchProfilesResponse {
+  repeated ChefProfile profiles = 1;
+}

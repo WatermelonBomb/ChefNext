@@ -5,19 +5,56 @@
 package db
 
 import (
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/sqlc-dev/pqtype"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ChefProfile struct {
+	ID              pgtype.UUID
+	UserID          pgtype.UUID
+	SkillTreeJson   []byte
+	Specialties     []string
+	WorkAreas       []string
+	Bio             pgtype.Text
+	CreatedAt       pgtype.Timestamp
+	UpdatedAt       pgtype.Timestamp
+	Headline        pgtype.Text
+	Summary         pgtype.Text
+	Location        pgtype.Text
+	YearsExperience pgtype.Int4
+	Availability    pgtype.Text
+	Languages       []string
+	LearningFocus   []string
+	PortfolioItems  []byte
+	FullName        pgtype.Text
+}
+
+type RestaurantProfile struct {
+	ID                 pgtype.UUID
+	UserID             pgtype.UUID
+	Name               string
+	Address            pgtype.Text
+	Description        pgtype.Text
+	CuisineTypes       []string
+	CreatedAt          pgtype.Timestamp
+	UpdatedAt          pgtype.Timestamp
+	DisplayName        pgtype.Text
+	Tagline            pgtype.Text
+	Location           pgtype.Text
+	Seats              pgtype.Int4
+	MentorshipStyle    pgtype.Text
+	CultureKeywords    []string
+	Benefits           []string
+	SupportPrograms    []string
+	LearningHighlights []byte
+}
+
 type User struct {
-	ID           uuid.UUID
+	ID           pgtype.UUID
 	Email        string
 	PasswordHash string
 	Role         string
 	KycStatus    string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	KycFlags     pqtype.NullRawMessage
+	CreatedAt    pgtype.Timestamptz
+	UpdatedAt    pgtype.Timestamptz
+	KycFlags     []byte
 }

@@ -1,46 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageLayout } from './layouts/PageLayout';
 import { LoginForm } from './auth/LoginForm';
 import { SignupForm } from './auth/SignupForm';
+import { useAuth } from '../hooks/useAuth';
 
 interface AuthPageProps {
-  onLogin: (email: string, password: string) => void;
-  onSignup: (data: { email: string; password: string; name: string; role: 'chef' | 'restaurant' }) => void;
   onBack: () => void;
+  onSuccess?: () => void;
 }
 
-export function AuthPage({ onLogin, onSignup, onBack }: AuthPageProps) {
+export function AuthPage({ onBack, onSuccess }: AuthPageProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, register, loading, error, clearError, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      onSuccess?.();
+    }
+  }, [isAuthenticated, onSuccess]);
 
   const handleLogin = async (email: string, password: string) => {
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
     try {
-      onLogin(email, password);
+      await login(email, password);
+      onSuccess?.();
     } catch (error) {
+      // エラーは AuthContext で管理されるため、ここではログのみ
       console.error('Login failed:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleSignup = async (data: { email: string; password: string; name: string; role: 'chef' | 'restaurant' }) => {
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
     try {
-      onSignup(data);
+      await register({
+        email: data.email,
+        password: data.password,
+        role: data.role === 'chef' ? 'CHEF' : 'RESTAURANT',
+      });
+      onSuccess?.();
     } catch (error) {
       console.error('Signup failed:', error);
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const switchMode = (nextMode: 'login' | 'signup') => {
+    setMode(nextMode);
+    clearError();
   };
 
   return (
@@ -53,18 +57,24 @@ export function AuthPage({ onLogin, onSignup, onBack }: AuthPageProps) {
       badge="AUTHENTICATION"
       maxWidth="sm"
     >
+      {error && (
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
       <div className="w-full flex justify-center">
         {mode === 'login' ? (
           <LoginForm
             onSubmit={handleLogin}
-            onToggleMode={() => setMode('signup')}
-            isLoading={isLoading}
+            onToggleMode={() => switchMode('signup')}
+            isLoading={loading}
           />
         ) : (
           <SignupForm
             onSubmit={handleSignup}
-            onToggleMode={() => setMode('login')}
-            isLoading={isLoading}
+            onToggleMode={() => switchMode('login')}
+            isLoading={loading}
           />
         )}
       </div>

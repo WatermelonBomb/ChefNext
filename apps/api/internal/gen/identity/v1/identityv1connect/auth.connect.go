@@ -42,6 +42,8 @@ const (
 	AuthServiceRefreshTokenProcedure = "/identity.v1.AuthService/RefreshToken"
 	// AuthServiceLogoutProcedure is the fully-qualified name of the AuthService's Logout RPC.
 	AuthServiceLogoutProcedure = "/identity.v1.AuthService/Logout"
+	// AuthServiceGetMeProcedure is the fully-qualified name of the AuthService's GetMe RPC.
+	AuthServiceGetMeProcedure = "/identity.v1.AuthService/GetMe"
 )
 
 // AuthServiceClient is a client for the identity.v1.AuthService service.
@@ -54,6 +56,8 @@ type AuthServiceClient interface {
 	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 	// Logout invalidates the refresh token
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
+	// GetMe returns the current authenticated user's information
+	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the identity.v1.AuthService service. By default, it
@@ -91,6 +95,12 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("Logout")),
 			connect.WithClientOptions(opts...),
 		),
+		getMe: connect.NewClient[v1.GetMeRequest, v1.GetMeResponse](
+			httpClient,
+			baseURL+AuthServiceGetMeProcedure,
+			connect.WithSchema(authServiceMethods.ByName("GetMe")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -100,6 +110,7 @@ type authServiceClient struct {
 	login        *connect.Client[v1.LoginRequest, v1.LoginResponse]
 	refreshToken *connect.Client[v1.RefreshTokenRequest, v1.RefreshTokenResponse]
 	logout       *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
+	getMe        *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
 }
 
 // Register calls identity.v1.AuthService.Register.
@@ -122,6 +133,11 @@ func (c *authServiceClient) Logout(ctx context.Context, req *connect.Request[v1.
 	return c.logout.CallUnary(ctx, req)
 }
 
+// GetMe calls identity.v1.AuthService.GetMe.
+func (c *authServiceClient) GetMe(ctx context.Context, req *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
+	return c.getMe.CallUnary(ctx, req)
+}
+
 // AuthServiceHandler is an implementation of the identity.v1.AuthService service.
 type AuthServiceHandler interface {
 	// Register creates a new user account
@@ -132,6 +148,8 @@ type AuthServiceHandler interface {
 	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 	// Logout invalidates the refresh token
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
+	// GetMe returns the current authenticated user's information
+	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -165,6 +183,12 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("Logout")),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceGetMeHandler := connect.NewUnaryHandler(
+		AuthServiceGetMeProcedure,
+		svc.GetMe,
+		connect.WithSchema(authServiceMethods.ByName("GetMe")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/identity.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceRegisterProcedure:
@@ -175,6 +199,8 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceRefreshTokenHandler.ServeHTTP(w, r)
 		case AuthServiceLogoutProcedure:
 			authServiceLogoutHandler.ServeHTTP(w, r)
+		case AuthServiceGetMeProcedure:
+			authServiceGetMeHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -198,4 +224,8 @@ func (UnimplementedAuthServiceHandler) RefreshToken(context.Context, *connect.Re
 
 func (UnimplementedAuthServiceHandler) Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("identity.v1.AuthService.Logout is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("identity.v1.AuthService.GetMe is not implemented"))
 }

@@ -265,13 +265,13 @@ curl -X POST http://localhost:8080/identity.v1.AuthService/Register \
 **目標**: Chef/Restaurantのプロフィールを作成・編集・表示できる
 
 ### 完了条件
-- [ ] Chefプロフィール作成・編集APIが動作する
-- [ ] Restaurantプロフィール作成・編集APIが動作する
-- [ ] プロフィール取得APIが動作する
-- [ ] スキルツリーをJSON形式で保存・取得できる
+- [x] Chefプロフィール作成・編集APIが動作する
+- [x] Restaurantプロフィール作成・編集APIが動作する
+- [x] プロフィール取得APIが動作する
+- [x] スキルツリーをJSON形式で保存・取得できる
 - [ ] フロントエンドでプロフィール作成フォームが動作する
 - [ ] フロントエンドでプロフィール表示ページが動作する
-- [ ] 自分のプロフィールのみ編集可能（RBAC）
+- [x] 自分のプロフィールのみ編集可能（RBAC）
 
 ### デモ可能な機能
 - ✅ シェフプロフィール作成・編集
@@ -317,16 +317,16 @@ curl -X POST http://localhost:8080/identity.v1.AuthService/Register \
 - [ ] `buf generate`
 
 #### Task 2.3: バックエンド実装
-- [ ] UseCase実装（CreateProfile, UpdateProfile, GetProfile）
-- [ ] Connect ハンドラー実装
-- [ ] RBAC検証（自分のプロフィールのみ編集可）
-- [ ] JSON検証（スキルツリー構造）
+- [x] UseCase実装（CreateProfile, UpdateProfile, GetProfile）
+- [x] Connect ハンドラー実装
+- [x] RBAC検証（自分のプロフィールのみ編集可）
+- [x] JSON検証（スキルツリー構造）
 
 #### Task 2.4: フロントエンド実装
-- [ ] プロフィール作成フォーム（Chef）
-- [ ] プロフィール作成フォーム（Restaurant）
-- [ ] プロフィール表示ページ
-- [ ] スキルツリー入力UI
+- [x] プロフィール作成フォーム（Chef）
+- [x] プロフィール作成フォーム（Restaurant）
+- [x] プロフィール表示ページ
+- [x] スキルツリー入力UI
 
 ### 完了の証明
 ```bash
@@ -655,9 +655,9 @@ curl -X POST http://localhost:8080/identity.v1.AuthService/Register \
 ## 進捗トラッキング
 
 ### 現在のステータス
-- ✅ Milestone 0: 0% (未着手)
-- ⬜ Milestone 1: 0%
-- ⬜ Milestone 2: 0%
+- ✅ Milestone 0: 100% (完了)
+- ✅ Milestone 1: 100% (完了)
+- 🔄 Milestone 2: 50% (バックエンドAPI完了・フロントエンド残)
 - ⬜ Milestone 3: 0%
 - ⬜ Milestone 4: 0%
 - ⬜ Milestone 5: 0%
@@ -665,7 +665,7 @@ curl -X POST http://localhost:8080/identity.v1.AuthService/Register \
 - ⬜ Milestone 7: 0%
 
 ### 次のアクション
-**📍 Milestone 0: 開発環境構築を開始**
+**📍 Milestone 2: フロントエンド実装とUX検証を進める**
 
 ---
 
