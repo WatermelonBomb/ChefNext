@@ -6,6 +6,8 @@ apps/web/build/
 .DS_Store
 .env
 .env.*
+!.env.example
+!*/.env.example
 .vscode/
 .idea/
 *.log
@@ -17,3 +19,6 @@ yarn-error.log*
 .vercel/
 output/
 coverage/
+
+# build artifacts
+apps/api/tmp/
