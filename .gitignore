@@ -22,3 +22,5 @@ coverage/
 
 # build artifacts
 apps/api/tmp/
+apps/api/api
+.cache/

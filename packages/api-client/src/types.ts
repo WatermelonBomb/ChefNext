@@ -127,3 +127,96 @@ export interface ProfileClientOptions {
   baseUrl?: string;
   fetchImpl?: typeof fetch;
 }
+
+// Job + Application Types
+export type JobStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED';
+export type ApplicationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+
+export type JobMetadata = Record<string, unknown>;
+
+export interface JobSummary {
+  id: string;
+  title: string;
+  status: JobStatus;
+  restaurantName?: string;
+}
+
+export interface ChefSummary {
+  profileId: string;
+  fullName?: string;
+  location?: string;
+}
+
+export interface Job extends JobSummary {
+  restaurantId: string;
+  restaurantLocation?: string;
+  restaurantTagline?: string;
+  description: string;
+  requiredSkills: string[];
+  location?: string;
+  salaryRange?: string;
+  employmentType?: string;
+  metadata: JobMetadata;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JobApplication {
+  id: string;
+  jobId: string;
+  chefProfileId: string;
+  status: ApplicationStatus;
+  coverLetter?: string;
+  createdAt: string;
+  updatedAt: string;
+  job?: JobSummary;
+  chef?: ChefSummary;
+}
+
+export interface JobSearchParams {
+  keyword?: string;
+  requiredSkills?: string[];
+  location?: string;
+  limit?: number;
+  offset?: number;
+}
+
+export interface JobListResult {
+  jobs: Job[];
+  total: number;
+}
+
+export interface CreateJobParams {
+  title: string;
+  description: string;
+  requiredSkills: string[];
+  location?: string;
+  salaryRange?: string;
+  employmentType?: string;
+  status?: JobStatus;
+  metadata?: JobMetadata;
+}
+
+export interface UpdateJobParams extends Partial<CreateJobParams> {
+  jobId: string;
+}
+
+export interface CreateApplicationParams {
+  jobId: string;
+  coverLetter?: string;
+}
+
+export interface ListParams {
+  limit?: number;
+  offset?: number;
+}
+
+export interface JobClientOptions {
+  baseUrl?: string;
+  fetchImpl?: typeof fetch;
+}
+
+export interface UpdateApplicationStatusParams {
+  applicationId: string;
+  status: ApplicationStatus;
+}

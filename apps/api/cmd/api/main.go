@@ -21,9 +21,11 @@ import (
 
 	"github.com/chefnext/chefnext/apps/api/internal/gen/chef/v1/chefv1connect"
 	"github.com/chefnext/chefnext/apps/api/internal/gen/identity/v1/identityv1connect"
+	jobv1connect "github.com/chefnext/chefnext/apps/api/internal/gen/job/v1/jobv1connect"
 	"github.com/chefnext/chefnext/apps/api/internal/gen/restaurant/v1/restaurantv1connect"
 	chefHandler "github.com/chefnext/chefnext/apps/api/internal/handler/chef"
 	"github.com/chefnext/chefnext/apps/api/internal/handler/identity"
+	jobHandler "github.com/chefnext/chefnext/apps/api/internal/handler/job"
 	restaurantHandler "github.com/chefnext/chefnext/apps/api/internal/handler/restaurant"
 	"github.com/chefnext/chefnext/apps/api/internal/middleware"
 	"github.com/chefnext/chefnext/apps/api/internal/pkg/auth"
@@ -32,6 +34,7 @@ import (
 	"github.com/chefnext/chefnext/apps/api/internal/repository/db"
 	chefProfileUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/chefprofile"
 	identityUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/identity"
+	jobUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/job"
 	restaurantProfileUseCase "github.com/chefnext/chefnext/apps/api/internal/usecase/restaurantprofile"
 )
 
@@ -83,11 +86,13 @@ func run() error {
 	logoutUC := identityUseCase.NewLogoutUseCase(jwtManager, tokenStore)
 	chefProfileUC := chefProfileUseCase.NewService(queries)
 	restaurantProfileUC := restaurantProfileUseCase.NewService(queries)
+	jobUC := jobUseCase.NewService(queries)
 
 	// Initialize handlers
 	authHandler := identity.NewAuthHandler(registerUC, loginUC, refreshTokenUC, logoutUC)
 	chefProfileHandler := chefHandler.NewProfileHandler(chefProfileUC)
 	restaurantProfileHandler := restaurantHandler.NewProfileHandler(restaurantProfileUC)
+	jobServiceHandler := jobHandler.NewJobHandler(jobUC)
 
 	// Initialize interceptors
 	authInterceptor := middleware.NewAuthInterceptor(jwtManager)
@@ -116,10 +121,19 @@ func run() error {
 	)
 	mux.Handle(path, handler)
 
+	path, handler = jobv1connect.NewJobServiceHandler(
+		jobServiceHandler,
+		connect.WithInterceptors(rateLimitInterceptor, authInterceptor),
+	)
+	mux.Handle(path, handler)
+
 	// Use h2c to support HTTP/2 without TLS (required for Connect-RPC)
+	cors := middleware.NewCORSMiddleware(cfg.CORSAllowedOrigins)
+	serverHandler := loggingMiddleware(log, cors(h2c.NewHandler(mux, &http2.Server{})))
+
 	srv := &http.Server{
 		Addr:    net.JoinHostPort(cfg.HTTPHost, cfg.HTTPPort),
-		Handler: loggingMiddleware(log, h2c.NewHandler(mux, &http2.Server{})),
+		Handler: serverHandler,
 	}
 
 	go func() {

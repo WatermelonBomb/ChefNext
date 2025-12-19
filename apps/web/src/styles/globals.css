@@ -80,3 +80,53 @@ button {
 * {
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
+
+/* CRITICAL: Force horizontal writing mode for ALL elements */
+*,
+*::before,
+*::after,
+html,
+body,
+div,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+label,
+input,
+textarea,
+button,
+a,
+li,
+ul,
+ol,
+section,
+article,
+header,
+footer,
+nav,
+form,
+fieldset,
+legend {
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+}
+
+/* Additional fix for flexbox and grid containers */
+.flex,
+.grid,
+[class*="flex"],
+[class*="grid"] {
+  writing-mode: horizontal-tb !important;
+}
+
+/* Fix for specific text elements */
+[class*="text-"],
+[class*="font-"] {
+  writing-mode: horizontal-tb !important;
+}

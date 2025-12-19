@@ -108,6 +108,12 @@
 * ✅ **応募作成 & 応募一覧の閲覧** (追加)
 * ✅ 「この画面は `packages/features/job` を Web から利用」と説明できる
 
+### テスト
+* [ ] `apps/api/internal/usecase/job`, `.../application` 配下にユースケース単体テストを追加（Go の in-memory リポジトリで応募ステータス遷移や `UNIQUE(job_id, chef_id)` の検証を行う）
+* [ ] Connect ハンドラーを `httptest` + `connect-go` で結合テストし、求人検索→応募作成までの RPC が 200 を返すことを確認
+* [ ] `packages/api-client` の求人/応募クライアントに型整合性テストを追加（モック fetch でレスポンス整形を検証）
+* [ ] `packages/features/job` と `packages/ui` の主要コンポーネントを Jest + Testing Library でレンダリングテストし、`apps/web` では `pnpm test --filter=@chefnext/web` を CI に組み込む
+
 ---
 
 ## Milestone 4: ポートフォリオ画像アップロード 📸 (追加)
@@ -130,6 +136,12 @@
 * ✅ 料理写真アップロード → 自動処理 → 表示
 * ✅ プロフィールからポートフォリオを閲覧
 
+### テスト
+* [ ] Presigned URL 発行 API の Go 単体テスト（署名有効期限や MIME 制限、S3 キー命名規則を検証）
+* [ ] 画像処理 Lambda/ワーカー用のテスト（`go test` または Node なら `vitest` で EXIF 除去とリサイズ結果をサンプル画像で比較）
+* [ ] `ImageUploader` とプロフィール画面に対して Playwright もしくは Cypress で簡易 E2E を追加し、3 サイズが保存されることを確認
+* [ ] MinIO への統合テストは docker-compose 上で `make test-upload`（新規ターゲット）として自動化し、CI でも並列実行できるようにする
+
 ---
 
 ## Milestone 5: Expo モバイルアプリ PoC 📱 (修正)
@@ -149,6 +161,12 @@
 ### デモ可能な機能
 * ✅ iOS/Android で求人一覧と認証フロー
 * ✅ Web とモバイルで同じ Screen / API クライアントを共有
+
+### テスト
+* [ ] `apps/mobile` で `@testing-library/react-native` を採用し、`JobListingScreen` と `AuthScreen` のレンダリング／ナビゲーション単体テストを追加
+* [ ] Metro/Babel の alias がズレていないことを `expo jest --watch=false` で検証（`@features` などを import するスモークテストを書いておく）
+* [ ] Expo Router or React Navigation のリンク構成を `expo-router/testing-library` でスナップショット化し、CI の `pnpm test --filter=@chefnext/mobile` に含める
+* [ ] API 連携は MSW などでモックし、`apps/mobile` だけで `pnpm test --filter=@chefnext/mobile --runInBand` を走らせるジョブを GitHub Actions に追加
 
 ---
 
@@ -175,6 +193,12 @@
 * ✅ Restaurant / Chef 間で応募からチャット開始
 * ✅ 新着メッセージ通知受信
 * ✅ レビュー投稿・閲覧
+
+### テスト
+* [ ] WebSocket チャット API 用の Go 結合テスト（`httptest` でサーバーを立ち上げ、擬似クライアント間で往復メッセージと既読更新を検証）
+* [ ] 通知キュー（asynq）をローカル Redis で再現し、ジョブ投入→メール/WebSocket Push 発火を unit + integration でカバー
+* [ ] 簡易レビュー API はユースケース単位でステータス制約（応募完了のみレビュー可）をテスト
+* [ ] Playwright シナリオを追加し、応募一覧→チャット開始→レビュー投稿までを自動化。Expo 側は `detox` もしくは Expo Test を導入してチャット画面のリアルタイム更新を検証
 
 ---
 
@@ -205,6 +229,12 @@
 * [ ] セキュリティチェック（依存ライブラリ CVE、Auth/権限レビュー）
 * [ ] レポート共有
 * [ ] **Post-MVP**: 面談予約 / 通報のデータモデル設計メモを docs に残す（実装は後続）
+
+### テスト & 計測運用
+* [ ] GitHub Actions で `go test ./...`、`pnpm test --filter=@chefnext/web`, `--filter=@chefnext/mobile`、Playwright、k6 を段階的に実行し、main ブランチのゲートに設定
+* [ ] k6 スクリプトは `apps/api/tests/load` に配置し、CI と手動（`make load-test`) の両方で走らせられるようにする
+* [ ] セキュリティテストは `gosec` や `npm audit`、`trivy fs` などを nightly で回し、検出結果を `docs/security-report.md` に反映
+* [ ] Expo EAS ビルド後に `detox` or Expo Test 実機スモークを自動起動し、ストア提出前の QA チェックリストを埋める
 
 ### デモ可能な機能
 * ✅ 本番 URL で一連のフローをデモ

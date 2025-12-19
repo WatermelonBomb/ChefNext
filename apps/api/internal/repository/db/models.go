@@ -5,8 +5,107 @@
 package db
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type ApplicationStatus string
+
+const (
+	ApplicationStatusPENDING  ApplicationStatus = "PENDING"
+	ApplicationStatusACCEPTED ApplicationStatus = "ACCEPTED"
+	ApplicationStatusREJECTED ApplicationStatus = "REJECTED"
+)
+
+func (e *ApplicationStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ApplicationStatus(s)
+	case string:
+		*e = ApplicationStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ApplicationStatus: %T", src)
+	}
+	return nil
+}
+
+type NullApplicationStatus struct {
+	ApplicationStatus ApplicationStatus
+	Valid             bool // Valid is true if ApplicationStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullApplicationStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.ApplicationStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ApplicationStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullApplicationStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ApplicationStatus), nil
+}
+
+type JobStatus string
+
+const (
+	JobStatusDRAFT     JobStatus = "DRAFT"
+	JobStatusPUBLISHED JobStatus = "PUBLISHED"
+	JobStatusCLOSED    JobStatus = "CLOSED"
+)
+
+func (e *JobStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = JobStatus(s)
+	case string:
+		*e = JobStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for JobStatus: %T", src)
+	}
+	return nil
+}
+
+type NullJobStatus struct {
+	JobStatus JobStatus
+	Valid     bool // Valid is true if JobStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullJobStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.JobStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.JobStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullJobStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.JobStatus), nil
+}
+
+type Application struct {
+	ID            pgtype.UUID
+	JobID         pgtype.UUID
+	ChefProfileID pgtype.UUID
+	Status        ApplicationStatus
+	CoverLetter   pgtype.Text
+	CreatedAt     pgtype.Timestamp
+	UpdatedAt     pgtype.Timestamp
+}
 
 type ChefProfile struct {
 	ID              pgtype.UUID
@@ -26,6 +125,22 @@ type ChefProfile struct {
 	LearningFocus   []string
 	PortfolioItems  []byte
 	FullName        pgtype.Text
+}
+
+type Job struct {
+	ID             pgtype.UUID
+	RestaurantID   pgtype.UUID
+	Title          string
+	Description    string
+	RequiredSkills []string
+	Location       pgtype.Text
+	SalaryRange    pgtype.Text
+	EmploymentType pgtype.Text
+	Status         JobStatus
+	Metadata       []byte
+	SearchVector   interface{}
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
 }
 
 type RestaurantProfile struct {
