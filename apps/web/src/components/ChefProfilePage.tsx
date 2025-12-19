@@ -9,6 +9,7 @@ import { useProfileContext } from '../context/ProfileContext';
 
 interface ChefProfilePageProps {
   onBack: () => void;
+  onViewApplications?: () => void;
 }
 
 const DEFAULT_SKILL_TREE = [
@@ -87,7 +88,7 @@ const DEFAULT_PROFILE = {
   portfolio: []
 };
 
-export function ChefProfilePage({ onBack }: ChefProfilePageProps) {
+export function ChefProfilePage({ onBack, onViewApplications }: ChefProfilePageProps) {
   const { chefProfile, chefLoading, refreshChefProfile } = useProfileContext();
 
   React.useEffect(() => {
@@ -166,6 +167,17 @@ export function ChefProfilePage({ onBack }: ChefProfilePageProps) {
               </div>
             </div>
           </div>
+
+          {onViewApplications && (
+            <div className="flex justify-end mb-8">
+              <button
+                onClick={onViewApplications}
+                className="px-5 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold hover:border-[#CDAE58]"
+              >
+                応募状況を確認
+              </button>
+            </div>
+          )}
 
           {/* Skills Section */}
           <motion.div

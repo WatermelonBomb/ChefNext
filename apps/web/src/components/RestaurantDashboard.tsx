@@ -462,7 +462,7 @@ export function RestaurantDashboard({ onNavigate }: RestaurantDashboardProps) {
             </div>
 
             <div className="flex gap-2">
-              <Button variant="primary" size="sm">
+              <Button variant="primary" size="sm" onClick={() => onNavigate('restaurant-applications')}>
                 応募者確認
               </Button>
               <Button variant="secondary" size="sm">

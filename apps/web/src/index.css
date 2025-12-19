@@ -1,5 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap");
 /*! tailwindcss v4.1.3 | MIT License | https://tailwindcss.com */
+
+:root {
+  --layout-writing-mode-default: horizontal-tb;
+}
+
+@layer base {
+  :where(html, body, #root) {
+    writing-mode: var(--layout-writing-mode-default);
+    text-orientation: mixed;
+    direction: ltr;
+  }
+}
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {

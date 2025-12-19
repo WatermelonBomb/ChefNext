@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "lib": ["ES2021", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "paths": {
+      "@features/*": ["packages/features/src/*"],
+      "@features": ["packages/features/src"],
+      "@ui/*": ["packages/ui/src/*"],
+      "@ui": ["packages/ui/src"],
+      "@api-client": ["packages/api-client/src"],
+      "@api-client/*": ["packages/api-client/src/*"]
+    }
+  },
+  "include": ["packages", "apps"],
+  "exclude": ["node_modules", "dist", "build"]
+}

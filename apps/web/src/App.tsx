@@ -16,6 +16,8 @@ import { AuthPage } from './components/AuthPage';
 import { ChefProfileEditor } from './components/profile/ChefProfileEditor';
 import { RestaurantProfileEditor } from './components/profile/RestaurantProfileEditor';
 import { RestaurantProfilePage } from './components/RestaurantProfilePage';
+import { ChefApplicationsPage } from './components/ChefApplicationsPage';
+import { RestaurantApplicationsPage } from './components/RestaurantApplicationsPage';
 import { ProfileProvider } from './context/ProfileContext';
 import { useAuth } from './hooks/useAuth';
 
@@ -35,11 +37,14 @@ type Page =
   | 'interview-schedule'
   | 'review'
   | 'about'
-  | 'auth';
+  | 'auth'
+  | 'chef-applications'
+  | 'restaurant-applications';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
-  const { isAuthenticated } = useAuth();
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const { isAuthenticated, user } = useAuth();
 
   const navigateTo = (page: Page) => {
     setCurrentPage(page);
@@ -70,22 +75,41 @@ function AppContent() {
         );
 
       case 'restaurant-dashboard':
-        return <RestaurantDashboard onNavigate={navigateTo} />;
+        return <RestaurantDashboard onNavigate={(page) => navigateTo(page as Page)} />;
 
       case 'restaurant-profile':
         return <RestaurantProfilePage onBack={() => navigateTo('restaurant-dashboard')} />;
 
       case 'job-post':
-        return <JobPostPage onBack={() => navigateTo('restaurant-dashboard')} />;
+        return (
+          <JobPostPage
+            onBack={() => navigateTo('restaurant-dashboard')}
+            onSaved={() => navigateTo('jobs')}
+          />
+        );
 
       case 'jobs':
-        return <JobListingPage onJobClick={(jobId) => navigateTo('job-detail')} />;
+        return (
+          <JobListingPage
+            onJobClick={(jobId) => {
+              setSelectedJobId(jobId);
+              navigateTo('job-detail');
+            }}
+            onCreateJob={() => navigateTo('job-post')}
+            onViewApplications={user?.role === 'CHEF' ? () => navigateTo('chef-applications') : undefined}
+          />
+        );
 
       case 'job-detail':
-        return <JobDetailPage onBack={() => navigateTo('jobs')} />;
+        return <JobDetailPage jobId={selectedJobId} onBack={() => navigateTo('jobs')} />;
 
       case 'profile':
-        return <ChefProfilePage onBack={() => navigateTo('jobs')} />;
+        return (
+          <ChefProfilePage
+            onBack={() => navigateTo('jobs')}
+            onViewApplications={user?.role === 'CHEF' ? () => navigateTo('chef-applications') : undefined}
+          />
+        );
 
       case 'auth':
         return (
@@ -94,6 +118,12 @@ function AppContent() {
             onSuccess={() => navigateTo('jobs')}
           />
         );
+
+      case 'chef-applications':
+        return <ChefApplicationsPage onBack={() => navigateTo('jobs')} />;
+
+      case 'restaurant-applications':
+        return <RestaurantApplicationsPage onBack={() => navigateTo('restaurant-dashboard')} />;
 
       case 'chat':
         return (
