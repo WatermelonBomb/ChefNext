@@ -1,16 +1,12 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { JobSearchParams } from '@chefnext/api-client';
 import { JobListScreen, useJobSearch } from '@features/job';
 import { useAuth } from '../hooks/useAuth';
 import { jobClient } from '../lib/apiClient';
 
-interface JobListingPageProps {
-  onJobClick: (jobId: string) => void;
-  onCreateJob?: () => void;
-  onViewApplications?: () => void;
-}
-
-export function JobListingPage({ onJobClick, onCreateJob, onViewApplications }: JobListingPageProps) {
+export function JobListingPage() {
+  const navigate = useNavigate();
   const { tokens, user } = useAuth();
   const [keyword, setKeyword] = useState('');
   const [searchParams, setSearchParams] = useState<JobSearchParams>({ limit: 12 });
@@ -20,11 +16,8 @@ export function JobListingPage({ onJobClick, onCreateJob, onViewApplications }: 
     accessToken: tokens?.accessToken,
   });
 
-  const canCreateJob = useMemo(() => user?.role === 'RESTAURANT' && Boolean(onCreateJob), [user, onCreateJob]);
-  const canViewApplications = useMemo(
-    () => user?.role === 'CHEF' && Boolean(onViewApplications),
-    [user, onViewApplications],
-  );
+  const canCreateJob = useMemo(() => user?.role === 'RESTAURANT', [user]);
+  const canViewApplications = useMemo(() => user?.role === 'CHEF', [user]);
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,7 +37,7 @@ export function JobListingPage({ onJobClick, onCreateJob, onViewApplications }: 
             </div>
             {canViewApplications && (
               <button
-                onClick={onViewApplications}
+                onClick={() => navigate('/chef/applications')}
                 className="px-5 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold hover:border-[#CDAE58]"
               >
                 応募状況を確認
@@ -73,8 +66,8 @@ export function JobListingPage({ onJobClick, onCreateJob, onViewApplications }: 
           isLoading={loading}
           error={error}
           onRetry={refresh}
-          onJobSelect={onJobClick}
-          onCreateJob={canCreateJob ? onCreateJob : undefined}
+          onJobSelect={(jobId) => navigate(`/jobs/${jobId}`)}
+          onCreateJob={canCreateJob ? () => navigate('/restaurant/jobs/new') : undefined}
           subtitle="React Native ベースの UI を Web でもそのまま利用しています"
         />
       </div>

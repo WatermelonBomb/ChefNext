@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import {
   MapPin,
   Sparkles,
@@ -47,12 +48,8 @@ interface ChefProfileFormValues {
   skillTree: ChefSkillInput[];
 }
 
-interface ChefProfileEditorProps {
-  onBack: () => void;
-  onSaved?: () => void;
-}
-
-export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
+export function ChefProfileEditor() {
+  const navigate = useNavigate();
   const [workAreaInput, setWorkAreaInput] = React.useState('');
   const [portfolioShots, setPortfolioShots] = React.useState<UploadedImage[]>([]);
   const [copied, setCopied] = React.useState(false);
@@ -135,10 +132,10 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
       skillTree: chefProfile.skillTree.length
         ? chefProfile.skillTree
         : [
-            { id: 'skill-1', skill: '火入れ', level: 4, focus: 'それぞれの部位ごとの火入れ最適化' },
-            { id: 'skill-2', skill: 'ソース', level: 3, focus: 'バターソースと現代的な軽さの両立' },
-            { id: 'skill-3', skill: 'チームマネジメント', level: 2, focus: '3-4名チームのリーダー経験' }
-          ],
+          { id: 'skill-1', skill: '火入れ', level: 4, focus: 'それぞれの部位ごとの火入れ最適化' },
+          { id: 'skill-2', skill: 'ソース', level: 3, focus: 'バターソースと現代的な軽さの両立' },
+          { id: 'skill-3', skill: 'チームマネジメント', level: 2, focus: '3-4名チームのリーダー経験' }
+        ],
     });
     setPortfolioShots(chefProfile.portfolio.map(createUploadedImageFromStored));
   }, [chefProfile, reset]);
@@ -225,7 +222,6 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
 
       setPortfolioShots(saved.portfolio.map(createUploadedImageFromStored));
       setLastSavedAt(new Date().toLocaleTimeString());
-      onSaved?.();
     } catch (error) {
       console.error('Failed to save chef profile', error);
     }
@@ -330,11 +326,10 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
                     key={language}
                     type="button"
                     onClick={() => toggleChip('languages', language)}
-                    className={`px-4 py-2 rounded-xl border text-sm transition-colors ${
-                      selectedLanguages.includes(language)
+                    className={`px-4 py-2 rounded-xl border text-sm transition-colors ${selectedLanguages.includes(language)
                         ? 'border-[#CDAE58] bg-[#CDAE58]/10 text-[#1C1C1C]'
                         : 'border-[#1C1C1C]/15 text-[#1C1C1C]/70 hover:border-[#CDAE58]/40'
-                    }`}
+                      }`}
                   >
                     <Languages className="w-4 h-4 inline mr-1" />
                     {language}
@@ -359,11 +354,10 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
                   key={specialty}
                   type="button"
                   onClick={() => toggleChip('specialties', specialty)}
-                  className={`p-3 rounded-xl border transition-all ${
-                    selectedSpecialties.includes(specialty)
+                  className={`p-3 rounded-xl border transition-all ${selectedSpecialties.includes(specialty)
                       ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                       : 'border-[#1C1C1C]/15 hover:border-[#CDAE58]/40'
-                  }`}
+                    }`}
                 >
                   <span className="font-medium">{specialty}</span>
                 </button>
@@ -412,11 +406,10 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
                 key={goal}
                 type="button"
                 onClick={() => toggleChip('learningFocus', goal)}
-                className={`px-4 py-2 rounded-full border text-sm transition-colors ${
-                  selectedGoals.includes(goal)
+                className={`px-4 py-2 rounded-full border text-sm transition-colors ${selectedGoals.includes(goal)
                     ? 'border-[#8BA497] bg-[#8BA497]/10 text-[#1C1C1C]'
                     : 'border-[#1C1C1C]/15 text-[#1C1C1C]/70 hover:border-[#8BA497]/40'
-                }`}
+                  }`}
               >
                 {goal}
               </button>
@@ -499,7 +492,7 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
           </div>
 
           <pre className="bg-[#1C1C1C] text-[#F2E6B6] p-6 rounded-2xl text-sm overflow-auto max-h-80">
-{skillTreeJson}
+            {skillTreeJson}
           </pre>
 
           <Button type="button" variant="ghost" onClick={handleCopySkillTree}>
@@ -516,7 +509,7 @@ export function ChefProfileEditor({ onBack, onSaved }: ChefProfileEditorProps) {
         </Card>
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <Button type="button" variant="ghost" onClick={onBack} disabled={isBusy}>
+          <Button type="button" variant="ghost" onClick={() => navigate('/chef/profile')} disabled={isBusy}>
             ← 戻る
           </Button>
           <div className="flex items-center gap-4">

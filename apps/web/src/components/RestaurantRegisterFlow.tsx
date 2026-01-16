@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Button';
 import { Tag } from './Tag';
 import { Check, MapPin, Building2, Users, Clock, Star, Target } from 'lucide-react';
@@ -7,11 +8,8 @@ import { PageLayout } from './layouts/PageLayout';
 import { Card } from './common/Card';
 import { ImageUploader } from './upload/ImageUploader';
 
-interface RestaurantRegisterFlowProps {
-  onComplete: () => void;
-}
-
-export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowProps) {
+export function RestaurantRegisterFlow() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     restaurantName: '',
@@ -68,7 +66,7 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
       setStep(step + 1);
     } else {
       setTimeout(() => {
-        onComplete();
+        navigate('/restaurant/profile/edit');
       }, 2000);
     }
   };
@@ -176,11 +174,10 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
                       <button
                         key={genre}
                         onClick={() => updateFormData('genre', genre)}
-                        className={`p-3 rounded-xl border-2 transition-all ${
-                          formData.genre === genre
+                        className={`p-3 rounded-xl border-2 transition-all ${formData.genre === genre
                             ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                             : 'border-[#1C1C1C]/20 hover:border-[#CDAE58]/40'
-                        }`}
+                          }`}
                       >
                         <span className="font-medium">{genre}</span>
                       </button>
@@ -263,11 +260,10 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
                       <button
                         key={program}
                         onClick={() => toggleArrayField('trainingPrograms', program)}
-                        className={`p-3 rounded-xl border-2 transition-all text-left ${
-                          formData.trainingPrograms.includes(program)
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${formData.trainingPrograms.includes(program)
                             ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                             : 'border-[#1C1C1C]/20 hover:border-[#CDAE58]/40'
-                        }`}
+                          }`}
                       >
                         <span className="font-medium">{program}</span>
                       </button>
@@ -282,11 +278,10 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
                       <button
                         key={style}
                         onClick={() => updateFormData('mentorshipStyle', style)}
-                        className={`p-3 rounded-xl border-2 transition-all text-left ${
-                          formData.mentorshipStyle === style
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${formData.mentorshipStyle === style
                             ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                             : 'border-[#1C1C1C]/20 hover:border-[#CDAE58]/40'
-                        }`}
+                          }`}
                       >
                         <span className="font-medium">{style}</span>
                       </button>
@@ -320,11 +315,10 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
                       <button
                         key={support}
                         onClick={() => toggleArrayField('careerSupport', support)}
-                        className={`p-3 rounded-xl border-2 transition-all text-left ${
-                          formData.careerSupport.includes(support)
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${formData.careerSupport.includes(support)
                             ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                             : 'border-[#1C1C1C]/20 hover:border-[#CDAE58]/40'
-                        }`}
+                          }`}
                       >
                         <span className="font-medium">{support}</span>
                       </button>
@@ -339,11 +333,10 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
                       <button
                         key={env}
                         onClick={() => toggleArrayField('workEnvironment', env)}
-                        className={`p-3 rounded-xl border-2 transition-all text-left ${
-                          formData.workEnvironment.includes(env)
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${formData.workEnvironment.includes(env)
                             ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                             : 'border-[#1C1C1C]/20 hover:border-[#CDAE58]/40'
-                        }`}
+                          }`}
                       >
                         <span className="font-medium">{env}</span>
                       </button>
@@ -377,11 +370,10 @@ export function RestaurantRegisterFlow({ onComplete }: RestaurantRegisterFlowPro
                       <button
                         key={benefit}
                         onClick={() => toggleArrayField('benefits', benefit)}
-                        className={`p-3 rounded-xl border-2 transition-all text-left ${
-                          formData.benefits.includes(benefit)
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${formData.benefits.includes(benefit)
                             ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                             : 'border-[#1C1C1C]/20 hover:border-[#CDAE58]/40'
-                        }`}
+                          }`}
                       >
                         <span className="font-medium">{benefit}</span>
                       </button>

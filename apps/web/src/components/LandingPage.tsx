@@ -1,15 +1,14 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Button';
 import { PortfolioCard } from './PortfolioCard';
 import { TrendingUp, Users, Award, ArrowRight, Quote } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
-interface LandingPageProps {
-  onNavigate: (page: string) => void;
-}
+export function LandingPage() {
+  const navigate = useNavigate();
 
-export function LandingPage({ onNavigate }: LandingPageProps) {
   const portfolioItems = [
     {
       imageUrl: 'https://images.unsplash.com/photo-1755811248279-1ab13b7d4384?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnb3VybWV0JTIwcGxhdGluZyUyMGZpbmUlMjBkaW5pbmd8ZW58MXx8fHwxNzYzMDU0Mzg5fDA&ixlib=rb-4.1.0&q=80&w=1080',
@@ -30,7 +29,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       skills: ['盛付け']
     }
   ];
-  
+
   const growthSteps = [
     {
       icon: TrendingUp,
@@ -48,7 +47,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       description: '自分の店を持ち、夢を実現する'
     }
   ];
-  
+
   const testimonials = [
     {
       name: '田中 優太',
@@ -57,13 +56,13 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       image: 'https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaGVmJTIwcG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MXx8fHwxNzYzMDU0MzkxfDA&ixlib=rb-4.1.0&q=80&w=1080'
     },
     {
-      name: 'Restaurant L\'espoir',
+      name: "Restaurant L'espoir",
       role: 'フレンチレストラン',
       comment: '情熱ある若手シェフとの出会いが、私たちの店に新しい風を吹き込んでくれました。',
       image: 'https://images.unsplash.com/photo-1643101570532-88c8ecc07c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5lJTIwZGluaW5nJTIwcmVzdGF1cmFudCUyMGludGVyaW9yfGVufDF8fHx8MTc2Mjk1NTk5MXww&ixlib=rb-4.1.0&q=80&w=1080'
     }
   ];
-  
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -76,7 +75,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1C]/80 via-[#1C1C1C]/50 to-[#CDAE58]/30" />
         </div>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -90,20 +89,20 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               ChefNextは、成長を中心にしたキャリアプラットフォーム。<br />
               あなたの情熱を、次のステージへ。
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 size="lg"
-                onClick={() => onNavigate('chef-register')}
+                onClick={() => navigate('/chef/register')}
               >
                 Chefとして始める
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 size="lg"
-                onClick={() => onNavigate('restaurant-register')}
+                onClick={() => navigate('/restaurant/register')}
                 className="border-white text-white hover:bg-white hover:text-[#1C1C1C]"
               >
                 店舗として参加
@@ -112,7 +111,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </div>
           </motion.div>
         </div>
-        
+
         {/* Scroll Indicator */}
         <motion.div
           animate={{ y: [0, 10, 0] }}
@@ -124,7 +123,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           </div>
         </motion.div>
       </section>
-      
+
       {/* Growth Story Section */}
       <section className="py-24 bg-white">
         <div className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
@@ -142,27 +141,27 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
           <div className="w-full max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-20 place-items-center">
-            {growthSteps.map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                className="text-center"
-              >
-                <div className="w-20 h-20 bg-gradient-to-br from-[#CDAE58] to-[#F2E6B6] rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_4px_24px_rgba(205,174,88,0.2)]">
-                  <step.icon className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="mb-3 text-xl sm:text-2xl font-semibold leading-snug">{step.title}</h3>
-                <p className="text-[#1C1C1C]/70">{step.description}</p>
-              </motion.div>
-            ))}
+              {growthSteps.map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 }}
+                  className="text-center"
+                >
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#CDAE58] to-[#F2E6B6] rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_4px_24px_rgba(205,174,88,0.2)]">
+                    <step.icon className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="mb-3 text-xl sm:text-2xl font-semibold leading-snug">{step.title}</h3>
+                  <p className="text-[#1C1C1C]/70">{step.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
       </section>
-      
+
       {/* Portfolio Gallery Section */}
       <section className="py-32 bg-gradient-to-br from-[#FAF8F4] to-[#F4F0E6]">
         <div className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
@@ -187,7 +186,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           </div>
         </div>
       </section>
-      
+
       {/* Testimonials Section */}
       <section className="py-24 bg-white">
         <div className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8">
@@ -203,34 +202,34 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
           <div className="w-full max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 place-items-center">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="bg-[#FAF8F4] p-10 rounded-2xl relative shadow-[0_4px_24px_rgba(205,174,88,0.1)]"
-              >
-                <Quote className="w-12 h-12 text-[#CDAE58]/30 mb-6" />
-                <p className="text-[#1C1C1C]/80 mb-8 italic text-lg leading-relaxed">{testimonial.comment}</p>
-                <div className="flex items-center gap-5">
-                  <ImageWithFallback
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="text-base sm:text-lg font-medium leading-snug">{testimonial.name}</h4>
-                    <p className="text-sm text-[#1C1C1C]/60 mt-1">{testimonial.role}</p>
+              {testimonials.map((testimonial, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-[#FAF8F4] p-10 rounded-2xl relative shadow-[0_4px_24px_rgba(205,174,88,0.1)]"
+                >
+                  <Quote className="w-12 h-12 text-[#CDAE58]/30 mb-6" />
+                  <p className="text-[#1C1C1C]/80 mb-8 italic text-lg leading-relaxed">{testimonial.comment}</p>
+                  <div className="flex items-center gap-5">
+                    <ImageWithFallback
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div>
+                      <h4 className="text-base sm:text-lg font-medium leading-snug">{testimonial.name}</h4>
+                      <p className="text-sm text-[#1C1C1C]/60 mt-1">{testimonial.role}</p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-28 bg-gradient-to-r from-[#1C1C1C] to-[#2C2C2C] text-white">
         <div className="w-full flex flex-col items-center px-4 sm:px-6 lg:px-8 text-center">
@@ -247,7 +246,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             <Button
               variant="primary"
               size="lg"
-              onClick={() => onNavigate('chef-register')}
+              onClick={() => navigate('/chef/register')}
               className="px-12 py-4 text-lg"
             >
               今すぐ始める

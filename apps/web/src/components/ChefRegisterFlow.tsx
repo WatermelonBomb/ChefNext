@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Button';
 import { Tag } from './Tag';
 import { Check, Flame, Droplet, Scissors, MapPin, DollarSign } from 'lucide-react';
@@ -8,11 +9,8 @@ import { PageLayout } from './layouts/PageLayout';
 import { Card } from './common/Card';
 import { ImageUploader } from './upload/ImageUploader';
 
-interface ChefRegisterFlowProps {
-  onComplete: () => void;
-}
-
-export function ChefRegisterFlow({ onComplete }: ChefRegisterFlowProps) {
+export function ChefRegisterFlow() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -35,7 +33,7 @@ export function ChefRegisterFlow({ onComplete }: ChefRegisterFlowProps) {
       setStep(step + 1);
     } else {
       setTimeout(() => {
-        onComplete();
+        navigate('/chef/profile/edit');
       }, 2000);
     }
   };
@@ -64,9 +62,8 @@ export function ChefRegisterFlow({ onComplete }: ChefRegisterFlowProps) {
           {[1, 2, 3, 4, 5].map((s) => (
             <div
               key={s}
-              className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-                s <= step ? 'bg-[#CDAE58] text-white' : 'bg-white text-[#1C1C1C]/40'
-              }`}
+              className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${s <= step ? 'bg-[#CDAE58] text-white' : 'bg-white text-[#1C1C1C]/40'
+                }`}
             >
               {s < step ? <Check className="w-5 h-5" /> : s}
             </div>
@@ -115,11 +112,10 @@ export function ChefRegisterFlow({ onComplete }: ChefRegisterFlowProps) {
                       <button
                         key={genre}
                         onClick={() => setFormData({ ...formData, genre })}
-                        className={`px-4 py-2 rounded-full transition-all ${
-                          formData.genre === genre
-                            ? 'bg-[#CDAE58] text-white'
-                            : 'bg-white border border-[#1C1C1C]/20 text-[#1C1C1C] hover:border-[#CDAE58]'
-                        }`}
+                        className={`px-4 py-2 rounded-full transition-all ${formData.genre === genre
+                          ? 'bg-[#CDAE58] text-white'
+                          : 'bg-white border border-[#1C1C1C]/20 text-[#1C1C1C] hover:border-[#CDAE58]'
+                          }`}
                       >
                         {genre}
                       </button>

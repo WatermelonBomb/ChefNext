@@ -1,27 +1,25 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Menu, X, User, Briefcase } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from './Button';
 import { useAuth } from '../hooks/useAuth';
 
-interface HeaderProps {
-  currentPage: string;
-  onNavigate: (page: string) => void;
-}
-
-export function Header({ currentPage, onNavigate }: HeaderProps) {
+export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const { isAuthenticated, logout, loading, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
       await logout();
-      onNavigate('landing');
+      navigate('/');
     } catch (error) {
       console.error('Failed to logout', error);
     }
   };
-  
+
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -31,39 +29,36 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <div 
-            onClick={() => onNavigate('landing')}
-            className="cursor-pointer"
-          >
+          <Link to="/" className="cursor-pointer">
             <h3 className="text-[#CDAE58]">ChefNext</h3>
             <p className="text-xs text-[#1C1C1C]/60">次の一皿が、次のステージへ。</p>
-          </div>
-          
+          </Link>
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <button 
-              onClick={() => onNavigate('jobs')}
+            <Link
+              to="/jobs"
               className="text-[#1C1C1C] hover:text-[#CDAE58] transition-colors"
             >
               求人を探す
-            </button>
-            <button 
-              onClick={() => onNavigate('about')}
+            </Link>
+            <Link
+              to="/about"
               className="text-[#1C1C1C] hover:text-[#CDAE58] transition-colors"
             >
               ChefNextとは
-            </button>
-            <button 
-              onClick={() => onNavigate('chef-profile-builder')}
+            </Link>
+            <Link
+              to="/chef/profile/edit"
               className="text-[#1C1C1C] hover:text-[#CDAE58] transition-colors"
             >
               プロフィール作成
-            </button>
+            </Link>
             {!isAuthenticated ? (
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 size="sm"
-                onClick={() => onNavigate('auth')}
+                onClick={() => navigate('/auth')}
               >
                 <User className="w-4 h-4" />
                 ログイン / 登録
@@ -71,8 +66,8 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             ) : (
               <>
                 <span className="text-xs text-[#1C1C1C]/60">{user?.email}</span>
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   size="sm"
                   onClick={handleLogout}
                   disabled={loading}
@@ -83,7 +78,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               </>
             )}
           </nav>
-          
+
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -92,7 +87,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
-        
+
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <motion.div
@@ -100,38 +95,41 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden py-4 space-y-3"
           >
-            <button 
-              onClick={() => { onNavigate('jobs'); setMobileMenuOpen(false); }}
+            <Link
+              to="/jobs"
+              onClick={() => setMobileMenuOpen(false)}
               className="block w-full text-left px-4 py-2 hover:bg-[#CDAE58]/10 rounded-lg"
             >
               求人を探す
-            </button>
-            <button 
-              onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
+            </Link>
+            <Link
+              to="/about"
+              onClick={() => setMobileMenuOpen(false)}
               className="block w-full text-left px-4 py-2 hover:bg-[#CDAE58]/10 rounded-lg"
             >
               ChefNextとは
-            </button>
-            <button 
-              onClick={() => { onNavigate('chef-profile-builder'); setMobileMenuOpen(false); }}
+            </Link>
+            <Link
+              to="/chef/profile/edit"
+              onClick={() => setMobileMenuOpen(false)}
               className="block w-full text-left px-4 py-2 hover:bg-[#CDAE58]/10 rounded-lg"
             >
               プロフィール作成
-            </button>
+            </Link>
             {!isAuthenticated ? (
-              <Button 
-                variant="primary" 
-                size="sm" 
+              <Button
+                variant="primary"
+                size="sm"
                 className="w-full"
-                onClick={() => { onNavigate('auth'); setMobileMenuOpen(false); }}
+                onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }}
               >
                 <User className="w-4 h-4" />
                 ログイン / 登録
               </Button>
             ) : (
-              <Button 
-                variant="secondary" 
-                size="sm" 
+              <Button
+                variant="secondary"
+                size="sm"
                 className="w-full"
                 onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
                 disabled={loading}

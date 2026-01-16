@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import {
   Building,
   MapPin,
@@ -45,12 +46,8 @@ interface RestaurantProfileFormValues {
   learningHighlights: LearningHighlight[];
 }
 
-interface RestaurantProfileEditorProps {
-  onBack: () => void;
-  onSaved?: () => void;
-}
-
-export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEditorProps) {
+export function RestaurantProfileEditor() {
+  const navigate = useNavigate();
   const [gallery, setGallery] = React.useState<UploadedImage[]>([]);
   const [copied, setCopied] = React.useState(false);
   const [lastSavedAt, setLastSavedAt] = React.useState<string | null>(null);
@@ -146,19 +143,19 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
       learningHighlights: restaurantProfile.learningHighlights.length
         ? restaurantProfile.learningHighlights
         : [
-            {
-              id: 'highlight-1',
-              title: '火入れ / ソース週次カリキュラム',
-              duration: '3ヶ月',
-              detail: '肉・魚での火入れレビューと、1on1でのソースチェックを実施'
-            },
-            {
-              id: 'highlight-2',
-              title: '独立準備スタジオ',
-              duration: '6ヶ月',
-              detail: '原価計算とメニュー設計、開業計画作成まで伴走'
-            }
-          ],
+          {
+            id: 'highlight-1',
+            title: '火入れ / ソース週次カリキュラム',
+            duration: '3ヶ月',
+            detail: '肉・魚での火入れレビューと、1on1でのソースチェックを実施'
+          },
+          {
+            id: 'highlight-2',
+            title: '独立準備スタジオ',
+            duration: '6ヶ月',
+            detail: '原価計算とメニュー設計、開業計画作成まで伴走'
+          }
+        ],
     });
     setGallery(restaurantProfile.gallery.map(createUploadedImageFromStored));
   }, [restaurantProfile, reset]);
@@ -209,9 +206,7 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
         ...values,
         gallery: gallery.map((shot) => ({ id: shot.id, preview: shot.dataUrl ?? shot.preview })),
       });
-      setGallery(saved.gallery.map(createUploadedImageFromStored));
       setLastSavedAt(new Date().toLocaleTimeString());
-      onSaved?.();
     } catch (error) {
       console.error('Failed to save restaurant profile', error);
     }
@@ -304,11 +299,10 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
                   key={cuisine}
                   type="button"
                   onClick={() => toggleMultiSelect('cuisineTypes', cuisine)}
-                  className={`p-3 rounded-xl border transition-colors ${
-                    cuisineTypes.includes(cuisine)
+                  className={`p-3 rounded-xl border transition-colors ${cuisineTypes.includes(cuisine)
                       ? 'border-[#CDAE58] bg-[#CDAE58]/10'
                       : 'border-[#1C1C1C]/15 hover:border-[#CDAE58]/30'
-                  }`}
+                    }`}
                 >
                   {cuisine}
                 </button>
@@ -324,11 +318,10 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
                   key={keyword}
                   type="button"
                   onClick={() => toggleMultiSelect('cultureKeywords', keyword)}
-                  className={`px-4 py-2 rounded-full border text-sm transition-colors ${
-                    cultureKeywords.includes(keyword)
+                  className={`px-4 py-2 rounded-full border text-sm transition-colors ${cultureKeywords.includes(keyword)
                       ? 'border-[#8BA497] bg-[#8BA497]/10 text-[#1C1C1C]'
                       : 'border-[#1C1C1C]/15 text-[#1C1C1C]/70 hover:border-[#8BA497]/40'
-                  }`}
+                    }`}
                 >
                   {keyword}
                 </button>
@@ -423,11 +416,10 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
                   key={benefit}
                   type="button"
                   onClick={() => toggleMultiSelect('benefits', benefit)}
-                  className={`px-4 py-2 rounded-full border text-sm transition-colors ${
-                    benefits.includes(benefit)
+                  className={`px-4 py-2 rounded-full border text-sm transition-colors ${benefits.includes(benefit)
                       ? 'border-[#CDAE58] bg-[#CDAE58]/10 text-[#1C1C1C]'
                       : 'border-[#1C1C1C]/15 text-[#1C1C1C]/70 hover:border-[#CDAE58]/40'
-                  }`}
+                    }`}
                 >
                   {benefit}
                 </button>
@@ -443,11 +435,10 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
                   key={program}
                   type="button"
                   onClick={() => toggleMultiSelect('supportPrograms', program)}
-                  className={`p-3 rounded-xl border text-left transition-colors ${
-                    supportPrograms.includes(program)
+                  className={`p-3 rounded-xl border text-left transition-colors ${supportPrograms.includes(program)
                       ? 'border-[#8BA497] bg-[#8BA497]/10'
                       : 'border-[#1C1C1C]/15 hover:border-[#8BA497]/40'
-                  }`}
+                    }`}
                 >
                   {program}
                 </button>
@@ -462,7 +453,7 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
             <h3>プロフィールJSONプレビュー</h3>
           </div>
           <pre className="bg-[#1C1C1C] text-[#F2E6B6] p-6 rounded-2xl text-sm overflow-auto max-h-80">
-{previewJson}
+            {previewJson}
           </pre>
           <Button type="button" variant="ghost" onClick={handleCopy}>
             {copied ? 'コピーしました' : 'JSONをコピー'}
@@ -479,7 +470,7 @@ export function RestaurantProfileEditor({ onBack, onSaved }: RestaurantProfileEd
         </Card>
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <Button type="button" variant="ghost" onClick={onBack} disabled={isBusy}>
+          <Button type="button" variant="ghost" onClick={() => navigate('/restaurant/profile')} disabled={isBusy}>
             ← 戻る
           </Button>
           <div className="flex items-center gap-4">

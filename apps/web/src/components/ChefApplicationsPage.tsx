@@ -1,22 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ApplicationListScreen, useJobApplications } from '@features/job';
 import { useAuth } from '../hooks/useAuth';
 import { jobClient } from '../lib/apiClient';
 
-interface ChefApplicationsPageProps {
-  onBack: () => void;
-}
-
-export function ChefApplicationsPage({ onBack }: ChefApplicationsPageProps) {
+export function ChefApplicationsPage() {
+  const navigate = useNavigate();
   const { tokens, isAuthenticated, user } = useAuth();
   const accessToken = tokens?.accessToken;
+
+  const handleBack = () => navigate('/jobs');
 
   if (!isAuthenticated || user?.role !== 'CHEF' || !accessToken) {
     return (
       <GuardedView
         title="応募一覧を表示できません"
         description="シェフアカウントでログインすると応募履歴を確認できます。"
-        onBack={onBack}
+        onBack={handleBack}
       />
     );
   }
@@ -39,7 +39,7 @@ export function ChefApplicationsPage({ onBack }: ChefApplicationsPageProps) {
               <p className="text-[#475569]">応募した求人の進捗をリアルタイムで確認できます。</p>
             </div>
             <button
-              onClick={onBack}
+              onClick={handleBack}
               className="px-5 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold hover:border-[#CDAE58]"
             >
               求人一覧に戻る

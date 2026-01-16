@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Button';
 import { Tag } from './Tag';
 import {
@@ -8,11 +9,8 @@ import {
 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
-interface RestaurantDashboardProps {
-  onNavigate: (page: string) => void;
-}
-
-export function RestaurantDashboard({ onNavigate }: RestaurantDashboardProps) {
+export function RestaurantDashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Mock data
@@ -414,7 +412,7 @@ export function RestaurantDashboard({ onNavigate }: RestaurantDashboardProps) {
         <h2 className="text-xl font-semibold">募集求人管理</h2>
         <Button
           variant="primary"
-          onClick={() => onNavigate('job-post')}
+          onClick={() => navigate('/restaurant/jobs/new')}
         >
           <Plus className="w-4 h-4 mr-2" />
           新しい求人を作成
@@ -462,7 +460,7 @@ export function RestaurantDashboard({ onNavigate }: RestaurantDashboardProps) {
             </div>
 
             <div className="flex gap-2">
-              <Button variant="primary" size="sm" onClick={() => onNavigate('restaurant-applications')}>
+              <Button variant="primary" size="sm" onClick={() => navigate('/restaurant/applications')}>
                 応募者確認
               </Button>
               <Button variant="secondary" size="sm">
@@ -507,11 +505,10 @@ export function RestaurantDashboard({ onNavigate }: RestaurantDashboardProps) {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-[#CDAE58] text-white shadow-[0_4px_20px_rgba(205,174,88,0.3)]'
-                      : 'text-[#1C1C1C]/70 hover:bg-[#FAF8F4]'
-                  }`}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all ${activeTab === tab.id
+                    ? 'bg-[#CDAE58] text-white shadow-[0_4px_20px_rgba(205,174,88,0.3)]'
+                    : 'text-[#1C1C1C]/70 hover:bg-[#FAF8F4]'
+                    }`}
                 >
                   <IconComponent className="w-5 h-5" />
                   <span className="font-medium">{tab.label}</span>

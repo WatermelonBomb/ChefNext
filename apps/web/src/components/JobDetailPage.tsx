@@ -1,14 +1,12 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { JobDetailScreen, useJobDetail, useJobMutations } from '@features/job';
 import { useAuth } from '../hooks/useAuth';
 import { jobClient } from '../lib/apiClient';
 
-interface JobDetailPageProps {
-  jobId?: string | null;
-  onBack: () => void;
-}
-
-export function JobDetailPage({ jobId, onBack }: JobDetailPageProps) {
+export function JobDetailPage() {
+  const navigate = useNavigate();
+  const { jobId } = useParams<{ jobId: string }>();
   const { tokens, isAuthenticated, user } = useAuth();
   const { data: job, loading, error } = useJobDetail({ client: jobClient, jobId: jobId ?? undefined, accessToken: tokens?.accessToken });
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
@@ -20,9 +18,11 @@ export function JobDetailPage({ jobId, onBack }: JobDetailPageProps) {
 
   const canApply = useMemo(() => isAuthenticated && user?.role === 'CHEF' && Boolean(jobId), [isAuthenticated, user, jobId]);
 
+  const handleBack = () => navigate('/jobs');
+
   if (!jobId) {
     return (
-      <PlaceholderCard title="求人が選択されていません" onBack={onBack}>
+      <PlaceholderCard title="求人が選択されていません" onBack={handleBack}>
         求人一覧から閲覧したい案件を選択してください。
       </PlaceholderCard>
     );
@@ -30,7 +30,7 @@ export function JobDetailPage({ jobId, onBack }: JobDetailPageProps) {
 
   if (loading) {
     return (
-      <PlaceholderCard title="求人を読み込み中" onBack={onBack}>
+      <PlaceholderCard title="求人を読み込み中" onBack={handleBack}>
         少々お待ちください…
       </PlaceholderCard>
     );
@@ -38,7 +38,7 @@ export function JobDetailPage({ jobId, onBack }: JobDetailPageProps) {
 
   if (error || !job) {
     return (
-      <PlaceholderCard title="求人の取得に失敗しました" onBack={onBack}>
+      <PlaceholderCard title="求人の取得に失敗しました" onBack={handleBack}>
         {error ?? '該当する求人が見つかりませんでした。'}
       </PlaceholderCard>
     );
@@ -69,7 +69,7 @@ export function JobDetailPage({ jobId, onBack }: JobDetailPageProps) {
         )}
         <JobDetailScreen
           job={job}
-          onBack={onBack}
+          onBack={handleBack}
           onApply={canApply ? handleApply : undefined}
           isApplying={isApplying}
         />

@@ -1,16 +1,12 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { PortfolioCard } from './PortfolioCard';
 import { SkillTreeNode } from './SkillTreeNode';
 import { Tag } from './Tag';
 import { Calendar, MapPin, Award } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useProfileContext } from '../context/ProfileContext';
-
-interface ChefProfilePageProps {
-  onBack: () => void;
-  onViewApplications?: () => void;
-}
 
 const DEFAULT_SKILL_TREE = [
   { id: 'default-1', skill: '火入れ', level: 4, focus: '部位ごとの最適火入れ' },
@@ -88,7 +84,8 @@ const DEFAULT_PROFILE = {
   portfolio: []
 };
 
-export function ChefProfilePage({ onBack, onViewApplications }: ChefProfilePageProps) {
+export function ChefProfilePage() {
+  const navigate = useNavigate();
   const { chefProfile, chefLoading, refreshChefProfile } = useProfileContext();
 
   React.useEffect(() => {
@@ -115,11 +112,11 @@ export function ChefProfilePage({ onBack, onViewApplications }: ChefProfilePageP
 
   const portfolioItems = profile.portfolio.length
     ? profile.portfolio.map((item, index) => ({
-        imageUrl: item.preview,
-        title: `${profile.specialties[0] ?? 'Portfolio'} ${index + 1}`,
-        description: profile.summary,
-        skills: profile.specialties.slice(0, 3)
-      }))
+      imageUrl: item.preview,
+      title: `${profile.specialties[0] ?? 'Portfolio'} ${index + 1}`,
+      description: profile.summary,
+      skills: profile.specialties.slice(0, 3)
+    }))
     : DEFAULT_PORTFOLIO;
 
   const growthLog = DEFAULT_GROWTH_LOG;
@@ -168,16 +165,14 @@ export function ChefProfilePage({ onBack, onViewApplications }: ChefProfilePageP
             </div>
           </div>
 
-          {onViewApplications && (
-            <div className="flex justify-end mb-8">
-              <button
-                onClick={onViewApplications}
-                className="px-5 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold hover:border-[#CDAE58]"
-              >
-                応募状況を確認
-              </button>
-            </div>
-          )}
+          <div className="flex justify-end mb-8">
+            <button
+              onClick={() => navigate('/chef/applications')}
+              className="px-5 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold hover:border-[#CDAE58]"
+            >
+              応募状況を確認
+            </button>
+          </div>
 
           {/* Skills Section */}
           <motion.div

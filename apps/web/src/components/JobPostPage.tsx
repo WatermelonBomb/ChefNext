@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { CreateJobParams } from '@chefnext/api-client';
 import { JobPostScreen, useJobMutations } from '@features/job';
 import { useAuth } from '../hooks/useAuth';
 import { jobClient } from '../lib/apiClient';
 
-interface JobPostPageProps {
-  onBack: () => void;
-  onSaved?: () => void;
-}
-
-export function JobPostPage({ onBack, onSaved }: JobPostPageProps) {
+export function JobPostPage() {
+  const navigate = useNavigate();
   const { tokens, user } = useAuth();
   const isRestaurant = user?.role === 'RESTAURANT';
   const [localError, setLocalError] = useState<string | null>(null);
   const { createJob, loading, error } = useJobMutations({ client: jobClient, accessToken: tokens?.accessToken ?? '' });
+
+  const handleBack = () => navigate('/restaurant/dashboard');
 
   const handleSubmit = async (params: CreateJobParams) => {
     setLocalError(null);
@@ -24,7 +23,7 @@ export function JobPostPage({ onBack, onSaved }: JobPostPageProps) {
 
     const result = await createJob(params);
     if (result) {
-      onSaved?.();
+      navigate('/restaurant/dashboard');
     }
   };
 
@@ -35,7 +34,7 @@ export function JobPostPage({ onBack, onSaved }: JobPostPageProps) {
           <div className="bg-white rounded-2xl shadow p-10 text-center">
             <h3 className="text-2xl font-bold mb-4">求人作成はレストラン専用です</h3>
             <p className="text-[#475569] mb-6">レストランアカウントでログインし直すか、管理者にお問い合わせください。</p>
-            <button onClick={onBack} className="px-6 py-3 rounded-xl bg-[#1C1C1C] text-white font-semibold">戻る</button>
+            <button onClick={handleBack} className="px-6 py-3 rounded-xl bg-[#1C1C1C] text-white font-semibold">戻る</button>
           </div>
         </div>
       </div>
@@ -53,7 +52,7 @@ export function JobPostPage({ onBack, onSaved }: JobPostPageProps) {
         <JobPostScreen onSubmit={handleSubmit} isSubmitting={loading} />
         <div className="mt-6 text-center">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold"
           >
             キャンセル

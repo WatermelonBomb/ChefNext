@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ApplicationStatus } from '@chefnext/api-client';
 import {
   ApplicationListScreen,
@@ -9,21 +10,20 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { jobClient } from '../lib/apiClient';
 
-interface RestaurantApplicationsPageProps {
-  onBack: () => void;
-}
-
-export function RestaurantApplicationsPage({ onBack }: RestaurantApplicationsPageProps) {
+export function RestaurantApplicationsPage() {
+  const navigate = useNavigate();
   const { tokens, isAuthenticated, user } = useAuth();
   const accessToken = tokens?.accessToken;
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const handleBack = () => navigate('/restaurant/dashboard');
 
   if (!isAuthenticated || user?.role !== 'RESTAURANT' || !accessToken) {
     return (
       <GuardedView
         title="応募管理を表示できません"
         description="レストランアカウントでログインしてください。"
-        onBack={onBack}
+        onBack={handleBack}
       />
     );
   }
@@ -63,7 +63,7 @@ export function RestaurantApplicationsPage({ onBack }: RestaurantApplicationsPag
               <p className="text-[#475569]">最新の応募者とステータスをここから管理できます。</p>
             </div>
             <button
-              onClick={onBack}
+              onClick={handleBack}
               className="px-5 py-3 rounded-xl border border-[#e2e8f0] text-[#1C1C1C] font-semibold hover:border-[#CDAE58]"
             >
               ダッシュボードに戻る

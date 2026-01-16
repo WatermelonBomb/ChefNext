@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageLayout } from './layouts/PageLayout';
 import { LoginForm } from './auth/LoginForm';
 import { SignupForm } from './auth/SignupForm';
 import { useAuth } from '../hooks/useAuth';
 
-interface AuthPageProps {
-  onBack: () => void;
-  onSuccess?: () => void;
-}
-
-export function AuthPage({ onBack, onSuccess }: AuthPageProps) {
+export function AuthPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const { login, register, loading, error, clearError, isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
-      onSuccess?.();
+      navigate('/jobs');
     }
-  }, [isAuthenticated, onSuccess]);
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (email: string, password: string) => {
     try {
       await login(email, password);
-      onSuccess?.();
+      navigate('/jobs');
     } catch (error) {
       // エラーは AuthContext で管理されるため、ここではログのみ
       console.error('Login failed:', error);
@@ -36,7 +33,7 @@ export function AuthPage({ onBack, onSuccess }: AuthPageProps) {
         password: data.password,
         role: data.role === 'chef' ? 'CHEF' : 'RESTAURANT',
       });
-      onSuccess?.();
+      navigate('/jobs');
     } catch (error) {
       console.error('Signup failed:', error);
     }
@@ -81,7 +78,7 @@ export function AuthPage({ onBack, onSuccess }: AuthPageProps) {
 
       <div className="text-center mt-8">
         <button
-          onClick={onBack}
+          onClick={() => navigate('/')}
           className="text-[#1C1C1C]/60 hover:text-[#CDAE58] transition-colors"
         >
           ← トップページに戻る

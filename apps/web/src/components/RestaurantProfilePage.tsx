@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { Building, MapPin, Utensils, Sprout, Star, ArrowLeft } from 'lucide-react';
 import { PageLayout } from './layouts/PageLayout';
 import { Card } from './common/Card';
@@ -7,10 +8,6 @@ import { Tag } from './Tag';
 import { Button } from './Button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useProfileContext } from '../context/ProfileContext';
-
-interface RestaurantProfilePageProps {
-  onBack: () => void;
-}
 
 const DEFAULT_RESTAURANT_PROFILE = {
   displayName: "Restaurant L'espoir",
@@ -40,7 +37,8 @@ const DEFAULT_RESTAURANT_PROFILE = {
   gallery: []
 };
 
-export function RestaurantProfilePage({ onBack }: RestaurantProfilePageProps) {
+export function RestaurantProfilePage() {
+  const navigate = useNavigate();
   const { restaurantProfile, restaurantLoading, refreshRestaurantProfile } = useProfileContext();
 
   React.useEffect(() => {
@@ -176,7 +174,7 @@ export function RestaurantProfilePage({ onBack }: RestaurantProfilePageProps) {
         </Card>
 
         <div className="flex justify-center">
-          <Button variant="ghost" onClick={onBack}>
+          <Button variant="ghost" onClick={() => navigate('/restaurant/dashboard')}>
             <ArrowLeft className="w-4 h-4" /> 戻る
           </Button>
         </div>
